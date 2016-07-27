@@ -1,2 +1,2 @@
 #!/bin/bash
-gunicorn -c gunicorn.ini flaskapp:app
+gunicorn -b :12589 flaskapp:app
