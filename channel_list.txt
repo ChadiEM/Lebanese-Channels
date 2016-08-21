@@ -4,6 +4,10 @@
 
 http://localhost:12589/channel/lbc
 
+#EXTINF:-1 tvg-id="9", LBC Drama
+
+https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8
+
 #EXTINF:-1 tvg-id="2", MTV
 
 http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8
