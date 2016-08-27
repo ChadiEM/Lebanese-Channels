@@ -1,37 +1,37 @@
 #EXTM3U
 
-#EXTINF:-1 tvg-id="1", LBC
+#EXTINF:-1 tvg-id="1" tvg-logo="http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png", LBC
 
 http://localhost:12589/channel/lbc
 
-#EXTINF:-1 tvg-id="9", LBC Drama
+#EXTINF:-1 tvg-id="2" tvg-logo="http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG", LBC Drama
 
 https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8
 
-#EXTINF:-1 tvg-id="2", MTV
+#EXTINF:-1 tvg-id="3" tvg-logo="http://mtv.com.lb/Content/images/mtv.jpg", MTV
 
 http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8
 
-#EXTINF:-1 tvg-id="3", OTV
+#EXTINF:-1 tvg-id="4" tvg-logo="http://www.otv.com.lb/beta/images/logo.png", OTV
 
 http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8
 
-#EXTINF:-1 tvg-id="4", Aljadeed
+#EXTINF:-1 tvg-id="5" tvg-logo="http://www.aljadeed.tv/images/logo.png", Aljadeed
 
 http://localhost:12589/channel/jadeed
 
-#EXTINF:-1 tvg-id="5", FutureTV
+#EXTINF:-1 tvg-id="6" tvg-logo="http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png", FutureTV
 
 http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8
 
-#EXTINF:-1 tvg-id="6" group-title="Noursat", Noursat
+#EXTINF:-1 tvg-id="7" tvg-logo="http://noursat.tv/images/main-logo.png" group-title="Noursat", Noursat
 
 rtsp://svs.itworkscdn.net/nour4satlive/livestream
 
-#EXTINF:-1 tvg-id="7" group-title="Noursat", NourKiddes
+#EXTINF:-1 tvg-id="8" tvg-logo="http://noursat.tv/mediafiles/channels/koddass-logo.png" group-title="Noursat", Nour Al Koddass
 
 rtsp://svs.itworkscdn.net/nour1satlive/livestream
 
-#EXTINF:-1 tvg-id="8" group-title="Noursat", NourSharq
+#EXTINF:-1 tvg-id="9" tvg-logo="http://noursat.tv/mediafiles/channels/sharq-logo.png" group-title="Noursat", Nour Sharq
 
 rtsp://svs.itworkscdn.net/nour8satlive/livestream

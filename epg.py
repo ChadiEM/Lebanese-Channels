@@ -19,12 +19,15 @@ def epg():
 <display-name lang="en">LBC Europe</display-name>
 </channel>
 <channel id="2">
-<display-name lang="en">MTV</display-name>
+<display-name lang="en">LBC Drama</display-name>
 </channel>
 <channel id="3">
-<display-name lang="en">OTV</display-name>
+<display-name lang="en">MTV</display-name>
 </channel>
 <channel id="4">
+<display-name lang="en">OTV</display-name>
+</channel>
+<channel id="5">
 <display-name lang="en">Aljadeed</display-name>
 </channel>
 """
@@ -32,11 +35,14 @@ def epg():
     response += get_epg(
         'http://www.lbcgroup.tv/schedule-channels-date/5/' + datetime.datetime.now().strftime("%Y/%m/%d") + '/ar',
         LBCParser(), 100, '1')
-    response += get_epg('http://mtv.com.lb/program/getDayGridByDayName?dayName=', MTVParser(), -100, '2')
+    response += get_epg(
+        'http://www.lbcgroup.tv/schedule-channels-date/6/' + datetime.datetime.now().strftime("%Y/%m/%d") + '/ar',
+        LBCParser(), 0, '2')
+    response += get_epg('http://mtv.com.lb/program/getDayGridByDayName?dayName=', MTVParser(), -100, '3')
     response += get_epg(
         'http://www.otv.com.lb/beta/_ajax.php?action=grid&id=' + str(datetime.datetime.today().weekday() + 1) + '&r=14',
-        OTVParser(), -100, '3')
-    response += get_epg('http://www.aljadeed.tv/arabic/programs/schedule', JadeedParser(), -100, '4')
+        OTVParser(), -100, '4')
+    response += get_epg('http://www.aljadeed.tv/arabic/programs/schedule', JadeedParser(), -100, '5')
 
     response += "</tv>"
     return flask.Response(response, mimetype='text/xml')
@@ -72,7 +78,7 @@ def process_data(data, shift):
     for data_row in data:
         start_time = str(int(data_row[1]) + shift).zfill(4)
         if index + 1 >= len(data):
-            end_datetime = tomorrow + "000000"
+            end_datetime = tomorrow + "0000"
         else:
             end_datetime = today + str(int(data[index + 1][1]) + shift).zfill(4)
 
@@ -111,10 +117,19 @@ class LBCParser(Parser):
         listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
 
         for listing in listings:
-            title = listing.find('h2').find('a').text.strip()
-            date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
+            nextDayShow = False
+            mainDiv = listing.parent.parent
+            if mainDiv.name == 'div':
+                previousSiblings = mainDiv.previous_siblings
 
-            data.append([title, date])
+                for sibling in previousSiblings:
+                    if sibling.name == 'div' and sibling.has_attr('id') and 'DivShowNextDate' in sibling['id']:
+                        nextDayShow = True
+
+            if not nextDayShow:
+                title = listing.find('h2').find('a').text.strip()
+                date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
+                data.append([title, date])
 
         return data
 
