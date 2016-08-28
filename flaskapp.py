@@ -14,11 +14,22 @@ app = flask_app.wsgi_app
 
 @flask_app.route('/channels')
 def get_channels():
-    with open("channel_list.txt", "rt") as in_file:
-        result = in_file.read()
+    channel_list = []
+    channel_list.append('#EXTM3U')
+    channel_list.append(generate_channel("LBC Europe", "1", "http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png", "http://localhost:12589/channel/lbc"))
+    channel_list.append(generate_channel("LBC Drama", "2", "http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG", "http://localhost:12589/channel/lbcdrama"))
+    channel_list.append(generate_channel("MTV", "3", "http://mtv.com.lb/Content/images/mtv.jpg", "http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8"))
+    channel_list.append(generate_channel("OTV", "4", "http://www.otv.com.lb/beta/images/logo.png", "http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8"))
+    channel_list.append(generate_channel("Aljadeed", "5", "http://www.aljadeed.tv/images/logo.png", "http://localhost:12589/channel/jadeed"))
+    channel_list.append(generate_channel("Future TV", "6", "http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png", "http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8"))
+    channel_list.append(generate_channel("Noursat", "7", "http://noursat.tv/images/main-logo.png", "rtsp://svs.itworkscdn.net/nour4satlive/livestream"))
+    channel_list.append(generate_channel("Nour Al Koddass", "8", "http://noursat.tv/mediafiles/channels/koddass-logo.png", "rtsp://svs.itworkscdn.net/nour1satlive/livestream"))
+    channel_list.append(generate_channel("Nour Sharq", "9", "http://noursat.tv/mediafiles/channels/sharq-logo.png", "rtsp://svs.itworkscdn.net/nour8satlive/livestream"))
 
-    return flask.Response(result, mimetype='text/plain')
+    return flask.Response('\n'.join(channel_list), mimetype='text/plain')
 
+def generate_channel(name, id, logo, url):
+    return '#EXTINF:-1 tvg-id="' + id + '" tvg-logo="' + logo + '", ' + name + '\n' + url
 
 @flask_app.route('/channel/jadeed')
 @cache.cached(timeout=120)
