@@ -6,7 +6,7 @@ http://localhost:12589/channel/lbc
 
 #EXTINF:-1 tvg-id="2" tvg-logo="http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG", LBC Drama
 
-https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8
+http://localhost:12589/channel/lbcdrama
 
 #EXTINF:-1 tvg-id="3" tvg-logo="http://mtv.com.lb/Content/images/mtv.jpg", MTV
 

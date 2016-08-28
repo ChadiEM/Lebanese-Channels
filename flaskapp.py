@@ -47,6 +47,14 @@ def lbc():
 
     return make_response(playlist, html)
 
+@flask_app.route('/channel/lbcdrama')
+@cache.cached(timeout=300)
+def lbc_drama():
+    playlist = 'https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8'
+    html = make_request(playlist)
+
+    return make_response(playlist, html)
+
 
 def make_initial_request(url):
     req = urllib.request.Request(url)
