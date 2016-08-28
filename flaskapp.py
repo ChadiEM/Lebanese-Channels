@@ -2,6 +2,9 @@ import xml.etree.ElementTree
 import urllib
 import urllib.error
 import urllib.request
+
+import itertools
+
 import epg
 import flask
 import flask_cache
@@ -15,21 +18,48 @@ app = flask_app.wsgi_app
 @flask_app.route('/channels')
 def get_channels():
     channel_list = []
-    channel_list.append('#EXTM3U')
-    channel_list.append(generate_channel("LBC Europe", "1", "http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png", "http://localhost:12589/channel/lbc"))
-    channel_list.append(generate_channel("LBC Drama", "2", "http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG", "http://localhost:12589/channel/lbcdrama"))
-    channel_list.append(generate_channel("MTV", "3", "http://mtv.com.lb/Content/images/mtv.jpg", "http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8"))
-    channel_list.append(generate_channel("OTV", "4", "http://www.otv.com.lb/beta/images/logo.png", "http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8"))
-    channel_list.append(generate_channel("Aljadeed", "5", "http://www.aljadeed.tv/images/logo.png", "http://localhost:12589/channel/jadeed"))
-    channel_list.append(generate_channel("Future TV", "6", "http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png", "http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8"))
-    channel_list.append(generate_channel("Noursat", "7", "http://noursat.tv/images/main-logo.png", "rtsp://svs.itworkscdn.net/nour4satlive/livestream"))
-    channel_list.append(generate_channel("Nour Al Koddass", "8", "http://noursat.tv/mediafiles/channels/koddass-logo.png", "rtsp://svs.itworkscdn.net/nour1satlive/livestream"))
-    channel_list.append(generate_channel("Nour Sharq", "9", "http://noursat.tv/mediafiles/channels/sharq-logo.png", "rtsp://svs.itworkscdn.net/nour8satlive/livestream"))
+    counter = itertools.count()
+
+    channel_list.append(
+        generate_headers())
+    channel_list.append(
+        generate_channel("LBC Europe", counter, "http://localhost:12589/channel/lbc",
+                         "http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png"))
+    channel_list.append(
+        generate_channel("LBC Drama", counter, "http://localhost:12589/channel/lbcdrama",
+                         "http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG"))
+    channel_list.append(
+        generate_channel("MTV", counter, "http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8",
+                         "http://mtv.com.lb/Content/images/mtv.jpg"))
+    channel_list.append(
+        generate_channel("OTV", counter, "http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8",
+                         "http://www.otv.com.lb/beta/images/logo.png"))
+    channel_list.append(
+        generate_channel("Aljadeed", counter, "http://localhost:12589/channel/jadeed",
+                         "http://www.aljadeed.tv/images/logo.png"))
+    channel_list.append(
+        generate_channel("Future TV", counter, "http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8",
+                         "http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png"))
+    channel_list.append(
+        generate_channel("Noursat", counter, "rtsp://svs.itworkscdn.net/nour4satlive/livestream",
+                         "http://noursat.tv/images/main-logo.png"))
+    channel_list.append(
+        generate_channel("Nour Al Koddass", counter, "rtsp://svs.itworkscdn.net/nour1satlive/livestream",
+                         "http://noursat.tv/mediafiles/channels/koddass-logo.png"))
+    channel_list.append(
+        generate_channel("Nour Sharq", counter, "rtsp://svs.itworkscdn.net/nour8satlive/livestream",
+                         "http://noursat.tv/mediafiles/channels/sharq-logo.png"))
 
     return flask.Response('\n'.join(channel_list), mimetype='text/plain')
 
-def generate_channel(name, id, logo, url):
-    return '#EXTINF:-1 tvg-id="' + id + '" tvg-logo="' + logo + '", ' + name + '\n' + url
+
+def generate_headers():
+    return '#EXTM3U'
+
+
+def generate_channel(name, counter, url, logo):
+    return '#EXTINF:-1 tvg-id="' + str(next(counter)) + '" tvg-logo="' + logo + '", ' + name + '\n' + url
+
 
 @flask_app.route('/channel/jadeed')
 @cache.cached(timeout=120)
@@ -58,6 +88,7 @@ def lbc():
 
     return make_response(playlist, html)
 
+
 @flask_app.route('/channel/lbcdrama')
 @cache.cached(timeout=300)
 def lbc_drama():
@@ -85,11 +116,6 @@ def make_request(playlist):
     response = urllib.request.urlopen(req)
     html = response.read().decode('utf-8')
 
-    # print response.info()
-    # print ""
-
-    # print "The Headers are: ", response.info()
-
     response.close()
 
     return html
@@ -111,9 +137,3 @@ def make_response(playlist, html):
             list_response.append(line)
 
     return flask.Response('\n'.join(list_response), mimetype='text/plain')
-
-
-
-
-
-

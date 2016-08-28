@@ -103,13 +103,13 @@ def get_response(start_end_data, chanid):
     return response
 
 
-class Parser(metaclass=abc.ABCMeta):
+class EPGParser(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def parse(self, page_data):
         return
 
 
-class LBCParser(Parser):
+class LBCParser(EPGParser):
     def parse(self, page_data):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
@@ -117,16 +117,16 @@ class LBCParser(Parser):
         listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
 
         for listing in listings:
-            nextDayShow = False
-            mainDiv = listing.parent.parent
-            if mainDiv.name == 'div':
-                previousSiblings = mainDiv.previous_siblings
+            next_day_show = False
+            main_div = listing.parent.parent
+            if main_div.name == 'div':
+                previous_siblings = main_div.previous_siblings
 
-                for sibling in previousSiblings:
+                for sibling in previous_siblings:
                     if sibling.name == 'div' and sibling.has_attr('id') and 'DivShowNextDate' in sibling['id']:
-                        nextDayShow = True
+                        next_day_show = True
 
-            if not nextDayShow:
+            if not next_day_show:
                 title = listing.find('h2').find('a').text.strip()
                 date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
                 data.append([title, date])
@@ -134,7 +134,7 @@ class LBCParser(Parser):
         return data
 
 
-class MTVParser(Parser):
+class MTVParser(EPGParser):
     def parse(self, page_data):
         data = []
 
@@ -148,7 +148,7 @@ class MTVParser(Parser):
         return data
 
 
-class OTVParser(Parser):
+class OTVParser(EPGParser):
     def parse(self, page_data):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
@@ -163,7 +163,7 @@ class OTVParser(Parser):
         return data
 
 
-class JadeedParser(Parser):
+class JadeedParser(EPGParser):
     def parse(self, page_data):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
