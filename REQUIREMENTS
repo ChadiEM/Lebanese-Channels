@@ -1,8 +1,0 @@
-Requirements
-============
-Python 3 & Modules:
-- flask
-- flask_cache
-- gunicorn
-- BeatifulSoup4
-- lxml
