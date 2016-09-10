@@ -1,2 +1,3 @@
 #!/bin/bash
-gunicorn -b :12589 flaskapp:app
+
+python3 entry_point.py -b :12589 flaskapp:app
