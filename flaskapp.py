@@ -18,7 +18,7 @@ app = flask_app.wsgi_app
 @flask_app.route('/channels')
 def get_channels():
     channel_list = []
-    counter = itertools.count()
+    counter = itertools.count(start=1)
 
     channel_list.append(
         generate_headers())
