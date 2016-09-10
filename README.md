@@ -7,7 +7,7 @@
   - flask
   - flask_caching
   - gunicorn
-  - BeatifulSoup4
+  - BeautifulSoup4
   - lxml
 
 ## Run
