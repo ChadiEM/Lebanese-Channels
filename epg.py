@@ -14,10 +14,6 @@ from channel_ids import *
 epg_api = flask.Blueprint('epg_api', __name__)
 
 
-def get_channel(name, channel_id):
-    return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + name + '</display-name></channel>'
-
-
 @epg_api.route('/epg')
 def epg():
     response = '<?xml version="1.0" encoding="utf-8" ?>'
@@ -51,6 +47,10 @@ def epg():
 
     response += '</tv>'
     return flask.Response(response, mimetype='text/xml')
+
+
+def get_channel(name, channel_id):
+    return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + name + '</display-name></channel>'
 
 
 def get_epg(url, parser, shift, channel_id):
