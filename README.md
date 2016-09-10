@@ -5,7 +5,7 @@
 - Kodi PVR add-on: [IPTV-Simple](http://kodi.wiki/view/Add-on:IPTV_Simple_Client)
 - Python 3 & Modules:
   - flask
-  - flask_cache
+  - flask_caching
   - gunicorn
   - BeatifulSoup4
   - lxml

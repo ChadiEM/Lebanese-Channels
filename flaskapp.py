@@ -4,14 +4,14 @@ import urllib.request
 import xml.etree.ElementTree
 
 import flask
-import flask_cache
+import flask_caching
 
 import epg
 from channel_ids import *
 
 flask_app = flask.Flask(__name__)
 flask_app.register_blueprint(epg.epg_api)
-cache = flask_cache.Cache(flask_app, config={'CACHE_TYPE': 'simple'})
+cache = flask_caching.Cache(flask_app, config={'CACHE_TYPE': 'simple'})
 app = flask_app.wsgi_app
 
 
