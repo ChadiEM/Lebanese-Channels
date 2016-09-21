@@ -17,12 +17,13 @@ app = flask_app.wsgi_app
 
 @flask_app.route('/channels')
 def get_channels():
+    host = flask.request.host
     response = [generate_headers(),
                 generate_channel(LBC_NAME, LBC_ID,
-                                 'http://localhost:12589/channel/lbc',
+                                 'http://' + host + '/channel/lbc',
                                  'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'),
                 generate_channel(LBC_DRAMA_NAME, LBC_DRAMA_ID,
-                                 'http://localhost:12589/channel/lbcdrama',
+                                 'http://' + host + '/channel/lbcdrama',
                                  'http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG'),
                 generate_channel(MTV_NAME, MTV_ID,
                                  'http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8',
@@ -31,7 +32,7 @@ def get_channels():
                                  'http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8',
                                  'http://www.otv.com.lb/beta/images/logo.png'),
                 generate_channel(JADEED_NAME, JADEED_ID,
-                                 'http://localhost:12589/channel/jadeed',
+                                 'http://' + host + '/channel/jadeed',
                                  'http://www.aljadeed.tv/images/logo.png'),
                 generate_channel(FUTURE_NAME, FUTURE_ID,
                                  'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8',
