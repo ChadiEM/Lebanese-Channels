@@ -22,8 +22,8 @@ def get_channels():
                 generate_channel(LBC_NAME, LBC_ID,
                                  'http://' + host + '/channel/lbc',
                                  'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'),
-                generate_channel(LBC_DRAMA_NAME, LBC_DRAMA_ID,
-                                 'http://' + host + '/channel/lbcdrama',
+                generate_channel(LBC2_NAME, LBC2_ID,
+                                 'http://' + host + '/channel/lbc2',
                                  'http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG'),
                 generate_channel(MTV_NAME, MTV_ID,
                                  'http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8',
@@ -37,6 +37,9 @@ def get_channels():
                 generate_channel(FUTURE_NAME, FUTURE_ID,
                                  'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8',
                                  'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png'),
+                generate_channel(MANAR_NAME, MANAR_ID,
+                                 'http://edge.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8',
+                                 'http://english.almanar.com.lb/framework/assets/images/logo-tech.png'),
                 generate_channel(NOURSAT_NAME, NOURSAT_ID,
                                  'rtsp://svs.itworkscdn.net/nour4satlive/livestream',
                                  'http://noursat.tv/images/main-logo.png'),
@@ -86,7 +89,7 @@ def lbc():
     return make_response(playlist, html)
 
 
-@flask_app.route('/channel/lbcdrama')
+@flask_app.route('/channel/lbc2')
 @cache.cached(timeout=300)
 def lbc_drama():
     playlist = 'https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8'

@@ -20,11 +20,12 @@ def epg():
     response += '<tv>'
 
     response += get_channel(LBC_NAME, LBC_ID)
-    response += get_channel(LBC_DRAMA_NAME, LBC_DRAMA_ID)
+    response += get_channel(LBC2_NAME, LBC2_ID)
     response += get_channel(MTV_NAME, MTV_ID)
     response += get_channel(OTV_NAME, OTV_ID)
     response += get_channel(JADEED_NAME, JADEED_ID)
     response += get_channel(FUTURE_NAME, FUTURE_ID)
+    response += get_channel(MANAR_NAME, MANAR_ID)
     response += get_channel(NOURSAT_NAME, NOURSAT_ID)
     response += get_channel(NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_ID)
     response += get_channel(NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_ID)
@@ -34,7 +35,7 @@ def epg():
         LBCParser(), 100, LBC_ID)
     response += get_epg(
         'http://www.lbcgroup.tv/schedule-channels-date/6/' + datetime.datetime.now().strftime('%Y/%m/%d') + '/ar',
-        LBCParser(), 0, LBC_DRAMA_ID)
+        LBCParser(), 0, LBC2_ID)
     response += get_epg(
         'http://mtv.com.lb/program/getDayGridByDayName?dayName=',
         MTVParser(), -100, MTV_ID)

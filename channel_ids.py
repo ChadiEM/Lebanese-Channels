@@ -5,8 +5,8 @@ counter = itertools.count(start=1)
 LBC_ID = next(counter)
 LBC_NAME = "LBC Europe"
 
-LBC_DRAMA_ID = next(counter)
-LBC_DRAMA_NAME = "LBC Drama"
+LBC2_ID = next(counter)
+LBC2_NAME = "LBC2"
 
 MTV_ID = next(counter)
 MTV_NAME = "MTV"
@@ -19,6 +19,9 @@ JADEED_NAME = "Aljadeed"
 
 FUTURE_ID = next(counter)
 FUTURE_NAME = "Future TV"
+
+MANAR_ID = next(counter)
+MANAR_NAME = "Al Manar"
 
 NOURSAT_ID = next(counter)
 NOURSAT_NAME = "Noursat"
