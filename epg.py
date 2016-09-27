@@ -1,12 +1,7 @@
-import abc
-import datetime
-import json
-import re
 import urllib
 import urllib.error
 import urllib.request
 
-import bs4
 import flask
 
 from channel_ids import *
@@ -19,42 +14,23 @@ def epg():
     response = '<?xml version="1.0" encoding="utf-8" ?>'
     response += '<tv>'
 
-    response += get_channel(LBC_NAME, LBC_ID)
-    response += get_channel(LBC2_NAME, LBC2_ID)
-    response += get_channel(MTV_NAME, MTV_ID)
-    response += get_channel(OTV_NAME, OTV_ID)
-    response += get_channel(JADEED_NAME, JADEED_ID)
-    response += get_channel(FUTURE_NAME, FUTURE_ID)
-    response += get_channel(MANAR_NAME, MANAR_ID)
-    response += get_channel(NOURSAT_NAME, NOURSAT_ID)
-    response += get_channel(NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_ID)
-    response += get_channel(NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_ID)
+    for channel in CHANNEL_LIST:
+        response += get_channel(channel.get_channel_id(), channel.get_name())
 
-    response += get_epg(
-        'http://www.lbcgroup.tv/schedule-channels-date/5/' + datetime.datetime.now().strftime('%Y/%m/%d') + '/ar',
-        LBCParser(), 100, LBC_ID)
-    response += get_epg(
-        'http://www.lbcgroup.tv/schedule-channels-date/6/' + datetime.datetime.now().strftime('%Y/%m/%d') + '/ar',
-        LBCParser(), 0, LBC2_ID)
-    response += get_epg(
-        'http://mtv.com.lb/program/getDayGridByDayName?dayName=',
-        MTVParser(), -100, MTV_ID)
-    response += get_epg(
-        'http://www.otv.com.lb/beta/_ajax.php?action=grid&id=' + str(datetime.datetime.today().weekday() + 1) + '&r=14',
-        OTVParser(), -100, OTV_ID)
-    response += get_epg(
-        'http://www.aljadeed.tv/arabic/programs/schedule',
-        JadeedParser(), -100, JADEED_ID)
+    for channel in CHANNEL_LIST:
+        if channel.get_epg_data() is not None and channel.get_epg_parser() is not None:
+            response += get_epg(channel.get_channel_id(), channel.get_epg_data().get_fetch_url(),
+                                channel.get_epg_parser(), channel.get_epg_data().get_time_shift())
 
     response += '</tv>'
     return flask.Response(response, mimetype='text/xml')
 
 
-def get_channel(name, channel_id):
-    return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + name + '</display-name></channel>'
+def get_channel(channel_id, channel_name):
+    return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + channel_name + '</display-name></channel>'
 
 
-def get_epg(url, parser, shift, channel_id):
+def get_epg(channel_id, url, parser, shift):
     try:
         html = make_schedule_request(url)
         data = parser.parse(html)
@@ -107,78 +83,3 @@ def get_response(start_end_data, channel_id):
         response += '</programme>'
 
     return response
-
-
-class EPGParser(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def parse(self, page_data):
-        return
-
-
-class LBCParser(EPGParser):
-    def parse(self, page_data):
-        data = []
-        parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
-
-        listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
-
-        for listing in listings:
-            next_day_show = False
-            main_div = listing.parent.parent
-            if main_div.name == 'div':
-                previous_siblings = main_div.previous_siblings
-
-                for sibling in previous_siblings:
-                    if sibling.name == 'div' and sibling.has_attr('id') and 'DivShowNextDate' in sibling['id']:
-                        next_day_show = True
-
-            if not next_day_show:
-                title = listing.find('h2').find('a').text.strip()
-                date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
-                data.append([title, date])
-
-        return data
-
-
-class MTVParser(EPGParser):
-    def parse(self, page_data):
-        data = []
-
-        json_parsed = json.loads(page_data)
-
-        for program in json_parsed[0]['programs']:
-            name = program['programName']
-            time = program['time'].replace(':', '')
-            data.append([name, time])
-
-        return data
-
-
-class OTVParser(EPGParser):
-    def parse(self, page_data):
-        data = []
-        parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
-        listings = parsed_html.find_all('li')
-
-        for listing in listings:
-            title = listing.find('div', attrs={'class': 'b2'}).find('h3').text
-            date = listing.find('div', attrs={'class': 'b3'}).find('span').text.split()[0].replace(':', '')
-
-            data.append([title, date])
-
-        return data
-
-
-class JadeedParser(EPGParser):
-    def parse(self, page_data):
-        data = []
-        parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
-        listing = parsed_html.body.find('div', attrs={'class': 'programListing'})
-        rows = listing.find_all('div', attrs={'class': 'listingRow'})
-
-        for row in rows:
-            title = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingTitle'}).text.strip())
-            date = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip()).replace(':', '')
-            data.append([title, date])
-
-        return data

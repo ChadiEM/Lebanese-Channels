@@ -9,46 +9,25 @@ import flask_caching
 import epg
 from channel_ids import *
 
-flask_app = flask.Flask(__name__)
-flask_app.register_blueprint(epg.epg_api)
-cache = flask_caching.Cache(flask_app, config={'CACHE_TYPE': 'simple'})
-app = flask_app.wsgi_app
+channels = flask.Flask(__name__)
+channels.register_blueprint(epg.epg_api)
+cache = flask_caching.Cache(channels, config={'CACHE_TYPE': 'simple'})
+app = channels.wsgi_app
 
 
-@flask_app.route('/channels')
+@channels.route('/channels')
 def get_channels():
-    host = flask.request.host
-    response = [generate_headers(),
-                generate_channel(LBC_NAME, LBC_ID,
-                                 'http://' + host + '/channel/lbc',
-                                 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'),
-                generate_channel(LBC2_NAME, LBC2_ID,
-                                 'http://' + host + '/channel/lbc2',
-                                 'http://www.lbcgroup.tv/programsimages/Programs-Mp-668-635842240766782107.JPG'),
-                generate_channel(MTV_NAME, MTV_ID,
-                                 'http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8',
-                                 'http://mtv.com.lb/Content/images/mtv.jpg'),
-                generate_channel(OTV_NAME, OTV_ID,
-                                 'http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8',
-                                 'http://www.otv.com.lb/beta/images/logo.png'),
-                generate_channel(JADEED_NAME, JADEED_ID,
-                                 'http://' + host + '/channel/jadeed',
-                                 'http://www.aljadeed.tv/images/logo.png'),
-                generate_channel(FUTURE_NAME, FUTURE_ID,
-                                 'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8',
-                                 'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png'),
-                generate_channel(MANAR_NAME, MANAR_ID,
-                                 'http://edge.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8',
-                                 'http://english.almanar.com.lb/framework/assets/images/logo-tech.png'),
-                generate_channel(NOURSAT_NAME, NOURSAT_ID,
-                                 'rtsp://svs.itworkscdn.net/nour4satlive/livestream',
-                                 'http://noursat.tv/images/main-logo.png'),
-                generate_channel(NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_ID,
-                                 'rtsp://svs.itworkscdn.net/nour1satlive/livestream',
-                                 'http://noursat.tv/mediafiles/channels/koddass-logo.png'),
-                generate_channel(NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_ID,
-                                 'rtsp://svs.itworkscdn.net/nour8satlive/livestream',
-                                 'http://noursat.tv/mediafiles/channels/sharq-logo.png')]
+    host = flask.request.url_root
+
+    response = [generate_headers()]
+
+    for channel in CHANNEL_LIST:
+        if channel.get_route() is not None:
+            url = host + 'channel/' + channel.get_route()
+        else:
+            url = channel.get_url()
+
+        response.append(generate_channel(channel.get_name(), channel.get_channel_id(), url, channel.get_logo()))
 
     return flask.Response('\n'.join(response), mimetype='text/plain')
 
@@ -61,7 +40,7 @@ def generate_channel(name, channel_id, url, logo):
     return '#EXTINF:-1 tvg-id="' + str(channel_id) + '" tvg-logo="' + logo + '", ' + name + '\n' + url
 
 
-@flask_app.route('/channel/jadeed')
+@channels.route('/channel/jadeed')
 @cache.cached(timeout=120)
 def jadeed():
     html = make_initial_request('http://player.l1vetv.com/aljadeed/index-1.php')
@@ -77,7 +56,7 @@ def jadeed():
     return make_response(playlist, html)
 
 
-@flask_app.route('/channel/lbc')
+@channels.route('/channel/lbc')
 @cache.cached(timeout=300)
 def lbc():
     html = make_initial_request('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
@@ -89,7 +68,7 @@ def lbc():
     return make_response(playlist, html)
 
 
-@flask_app.route('/channel/lbc2')
+@channels.route('/channel/lbc2')
 @cache.cached(timeout=300)
 def lbc_drama():
     playlist = 'https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8'
