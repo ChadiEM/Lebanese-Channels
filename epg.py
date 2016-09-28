@@ -33,8 +33,7 @@ def get_channel(channel_id, channel_name):
 def get_epg(channel_id, url, parser, shift):
     try:
         html = make_schedule_request(url)
-        data = parser.parse(html)
-        start_end_data = process_data(data, shift)
+        start_end_data = parser.parse(html, shift)
         return get_response(start_end_data, channel_id)
     except urllib.error.URLError:
         return ''
@@ -49,29 +48,6 @@ def make_schedule_request(url):
     html = response.read().decode('utf-8')
     response.close()
     return html
-
-
-def process_data(data, shift):
-    processed_data = []
-    today = datetime.datetime.now().strftime('%Y%m%d')
-    tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
-
-    index = 0
-    for data_row in data:
-        start_time = str(int(data_row[1]) + shift).zfill(4)
-        if index + 1 >= len(data):
-            end_datetime = tomorrow + '0000'
-        else:
-            end_datetime = today + str(int(data[index + 1][1]) + shift).zfill(4)
-
-        if int(start_time) >= 0:
-            start = today + start_time + '00 +0100'
-            end = end_datetime + '00 +0100'
-            title = data_row[0]
-            processed_data.append([start, end, title])
-        index += 1
-
-    return processed_data
 
 
 def get_response(start_end_data, channel_id):

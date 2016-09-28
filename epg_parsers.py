@@ -1,4 +1,5 @@
 import abc
+import datetime
 import json
 import re
 
@@ -7,12 +8,34 @@ import bs4
 
 class EPGParser(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def parse(self, page_data):
+    def parse(self, page_data, shift):
         return
+
+    def process_data(self, data, shift):
+        processed_data = []
+        today = datetime.datetime.now().strftime('%Y%m%d')
+        tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
+
+        index = 0
+        for data_row in data:
+            start_time = str(int(data_row[1]) + shift).zfill(4)
+            if index + 1 >= len(data):
+                end_datetime = tomorrow + '0000'
+            else:
+                end_datetime = today + str(int(data[index + 1][1]) + shift).zfill(4)
+
+            if int(start_time) >= 0:
+                start = today + start_time + '00 +0100'
+                end = end_datetime + '00 +0100'
+                title = data_row[0]
+                processed_data.append([start, end, title])
+            index += 1
+
+        return processed_data
 
 
 class LBCParser(EPGParser):
-    def parse(self, page_data):
+    def parse(self, page_data, shift):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
 
@@ -33,11 +56,11 @@ class LBCParser(EPGParser):
                 date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
                 data.append([title, date])
 
-        return data
+        return self.process_data(data, shift)
 
 
 class MTVParser(EPGParser):
-    def parse(self, page_data):
+    def parse(self, page_data, shift):
         data = []
 
         json_parsed = json.loads(page_data)
@@ -47,11 +70,11 @@ class MTVParser(EPGParser):
             time = program['time'].replace(':', '')
             data.append([name, time])
 
-        return data
+        return self.process_data(data, shift)
 
 
 class OTVParser(EPGParser):
-    def parse(self, page_data):
+    def parse(self, page_data, shift):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listings = parsed_html.find_all('li')
@@ -62,11 +85,11 @@ class OTVParser(EPGParser):
 
             data.append([title, date])
 
-        return data
+        return self.process_data(data, shift)
 
 
 class JadeedParser(EPGParser):
-    def parse(self, page_data):
+    def parse(self, page_data, shift):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listing = parsed_html.body.find('div', attrs={'class': 'programListing'})
@@ -77,4 +100,4 @@ class JadeedParser(EPGParser):
             date = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip()).replace(':', '')
             data.append([title, date])
 
-        return data
+        return self.process_data(data, shift)
