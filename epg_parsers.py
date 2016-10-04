@@ -79,6 +79,9 @@ class MTVParser(EPGParser):
 class OTVParser(EPGParser):
     def parse(self, page_data):
         data = []
+
+        date = datetime.datetime.strptime(page_data.split('|@|')[1], '%a, %d %b %Y')
+
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listings = parsed_html.find_all('li')
 
@@ -88,7 +91,7 @@ class OTVParser(EPGParser):
             hr = int(time_string.split(':')[0])
             min = int(time_string.split(':')[1])
 
-            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+            start_time = datetime.datetime(date.year, date.month, date.day, hr, min)
 
             data.append([title, start_time])
 

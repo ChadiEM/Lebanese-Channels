@@ -19,8 +19,7 @@ def epg():
 
     for channel in CHANNEL_LIST:
         if channel.get_epg_data() is not None and channel.get_epg_parser() is not None:
-            response += get_epg(channel.get_channel_id(), channel.get_epg_data().get_fetch_url(),
-                                channel.get_epg_parser())
+            response += get_epg(channel)
 
     response += '</tv>'
     return flask.Response(response, mimetype='text/xml')
@@ -30,11 +29,24 @@ def get_channel(channel_id, channel_name):
     return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + channel_name + '</display-name></channel>'
 
 
-def get_epg(channel_id, url, parser):
+def get_epg(channel):
+    urls = channel.get_epg_data().get_fetch_url()
+
+    if isinstance(urls, list):
+        response = ''
+        for url in urls:
+            response += fetch_epg(channel, url)
+    else:
+        response = fetch_epg(channel, urls)
+
+    return response
+
+
+def fetch_epg(channel, urls):
     try:
-        html = make_schedule_request(url)
-        start_end_data = parser.parse(html)
-        return get_response(start_end_data, channel_id)
+        html = make_schedule_request(urls)
+        start_end_data = channel.get_epg_parser().parse(html)
+        return get_response(start_end_data, channel.get_channel_id())
     except urllib.error.URLError:
         return ''
 
