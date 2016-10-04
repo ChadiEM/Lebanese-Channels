@@ -2,6 +2,7 @@ import concurrent.futures
 import urllib
 import urllib.error
 import urllib.request
+from xml.sax.saxutils import escape
 
 import flask
 
@@ -12,7 +13,8 @@ epg_api = flask.Blueprint('epg_api', __name__)
 
 @epg_api.route('/epg')
 def epg():
-    response = '<?xml version="1.0" encoding="utf-8" ?>'
+    response = '<?xml version="1.0" encoding="utf-8" ?>\n'
+    response += '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
     response += '<tv>'
 
     for channel in CHANNEL_LIST:
@@ -69,13 +71,17 @@ def make_schedule_request(url):
     return html
 
 
-def get_response(start_end_data, channel_id):
+def get_response(program_datas, channel_id):
     response = ''
 
-    for pdata in start_end_data:
-        response += '<programme start="' + date_to_string(pdata[1]) + '" stop="' + date_to_string(
-            pdata[2]) + '" channel="' + str(channel_id) + '">'
-        response += '<title lang="en">' + pdata[0] + '</title>'
+    for program_data in program_datas:
+        response += '<programme start="' + date_to_string(program_data.get_start_time()) + '" stop="' + date_to_string(
+            program_data.get_stop_time()) + '" channel="' + str(channel_id) + '">'
+        response += '<title lang="en">' + program_data.get_name() + '</title>'
+        if program_data.get_desc() is not None:
+            response += '<desc lang="en">' + program_data.get_desc() + '</desc>'
+        if program_data.get_category() is not None:
+            response += '<category lang="en">' + escape(program_data.get_category()) + '</category>'
         response += '</programme>'
 
     return response

@@ -5,6 +5,8 @@ import re
 
 import bs4
 
+from program_data import ProgramData
+
 
 class EPGParser(metaclass=abc.ABCMeta):
     @abc.abstractmethod
@@ -14,7 +16,7 @@ class EPGParser(metaclass=abc.ABCMeta):
 
 class LBCParser(EPGParser):
     def parse(self, page_data):
-        processed_data = []
+        data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
 
         listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
@@ -42,9 +44,11 @@ class LBCParser(EPGParser):
                 start_time = start_time + datetime.timedelta(days=1)
             end_time = start_time + datetime.timedelta(minutes=duration)
 
-            processed_data.append([title, start_time, end_time])
+            data.append(ProgramData(title, start_time, end_time))
 
-        return calibrate(processed_data, 'نشرة الأخبار المسائية')
+        calibrate(data, 'نشرة الأخبار المسائية')
+
+        return data
 
 
 class MTVParser(EPGParser):
@@ -62,6 +66,9 @@ class MTVParser(EPGParser):
 
         for program in json_parsed[0]['programs']:
             name = program['programName']
+            description = re.sub('<[^<>]+>', '', program['description'])
+
+            category = program['category']
 
             time_string = program['time']
             hr = int(time_string.split(':')[0])
@@ -69,11 +76,12 @@ class MTVParser(EPGParser):
 
             start_time = datetime.datetime(year, month, day, hr, min)
 
-            data.append([name, start_time])
+            data.append(ProgramData(name, start_time, desc=description, category=category))
 
-        processed_data = append_end_times(data)
+        fill_end_times(data)
+        calibrate(data, 'Prime Time News')
 
-        return calibrate(processed_data, 'Prime Time News')
+        return data
 
 
 class OTVParser(EPGParser):
@@ -93,11 +101,12 @@ class OTVParser(EPGParser):
 
             start_time = datetime.datetime(date.year, date.month, date.day, hr, min)
 
-            data.append([title, start_time])
+            data.append(ProgramData(title, start_time))
 
-        processed_data = append_end_times(data)
+        fill_end_times(data)
+        calibrate(data, 'News 19:45')
 
-        return calibrate(processed_data, 'News 19:45')
+        return data
 
 
 class JadeedParser(EPGParser):
@@ -114,40 +123,34 @@ class JadeedParser(EPGParser):
             min = int(time_string.split(':')[1])
 
             start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
-            data.append([title, start_time])
+            data.append(ProgramData(title, start_time))
 
-        processed_data = append_end_times(data)
+        fill_end_times(data)
+        calibrate(data, 'نشرة الاخبار المسائية')
 
-        return calibrate(processed_data, 'نشرة الاخبار المسائية')
+        return data
 
 
-def append_end_times(start_datas):
-    processed_data = []
-
+def fill_end_times(program_datas):
     index = 0
-    for start_data in start_datas:
-        if index + 1 >= len(start_datas):
-            finish_date = start_data[1] + datetime.timedelta(minutes=60)
+    for program_data in program_datas:
+        if index + 1 >= len(program_datas):
+            finish_date = program_data.get_start_time() + datetime.timedelta(minutes=60)
         else:
-            finish_date = start_datas[index + 1][1]
-        processed_data.append([start_data[0], start_data[1], finish_date])
+            finish_date = program_datas[index + 1].get_start_time()
+
+        program_data.set_stop_time(finish_date)
+
         index += 1
 
-    return processed_data
 
-
-def calibrate(processed_data, match):
-    updated_processed_data = []
-
+def calibrate(program_datas, match):
     shift = 0
-    for current_data in processed_data:
-        if match in current_data[0]:
-            hr = current_data[1].hour
+    for program_data in program_datas:
+        if match in program_data.get_name():
+            hr = program_data.get_start_time().hour
             shift = 18 - hr
             break
 
-    for current_data in processed_data:
-        updated_processed_data.append([current_data[0], current_data[1] + datetime.timedelta(hours=shift),
-                                       current_data[2] + datetime.timedelta(hours=shift)])
-
-    return updated_processed_data
+    for program_data in program_datas:
+        program_data.shift(shift)
