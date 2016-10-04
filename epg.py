@@ -1,3 +1,4 @@
+import concurrent.futures
 import urllib
 import urllib.error
 import urllib.request
@@ -17,9 +18,10 @@ def epg():
     for channel in CHANNEL_LIST:
         response += get_channel(channel.get_channel_id(), channel.get_name())
 
-    for channel in CHANNEL_LIST:
-        if channel.get_epg_data() is not None and channel.get_epg_parser() is not None:
-            response += get_epg(channel)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(get_epg, channel): channel for channel in CHANNEL_LIST}
+        for future in concurrent.futures.as_completed(futures):
+            response += future.result()
 
     response += '</tv>'
     return flask.Response(response, mimetype='text/xml')
@@ -30,21 +32,26 @@ def get_channel(channel_id, channel_name):
 
 
 def get_epg(channel):
+    if channel.get_epg_data() is None or channel.get_epg_parser() is None:
+        return ''
+
     urls = channel.get_epg_data().get_fetch_url()
 
     if isinstance(urls, list):
         response = ''
-        for url in urls:
-            response += fetch_epg(channel, url)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            futures = {executor.submit(fetch_epg, channel, url): url for url in urls}
+            for future in concurrent.futures.as_completed(futures):
+                response += future.result()
     else:
         response = fetch_epg(channel, urls)
 
     return response
 
 
-def fetch_epg(channel, urls):
+def fetch_epg(channel, url):
     try:
-        html = make_schedule_request(urls)
+        html = make_schedule_request(url)
         start_end_data = channel.get_epg_parser().parse(html)
         return get_response(start_end_data, channel.get_channel_id())
     except urllib.error.URLError:
