@@ -10,7 +10,7 @@ class EPGData(metaclass=abc.ABCMeta):
 
 class LBCEPGData(EPGData):
     def get_fetch_url(self):
-        return 'http://www.lbcgroup.tv/schedule-channels-date/5/' + datetime.datetime.now().strftime('%Y/%m/%d') + '/ar'
+        return 'http://www.lbcgroup.tv/schedule-channels/5/lbc-europe-cet-time-paris/ar'
 
 
 class MTVEPGData(EPGData):

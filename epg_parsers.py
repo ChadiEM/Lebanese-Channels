@@ -29,19 +29,20 @@ class LBCParser(EPGParser):
                     if sibling.name == 'div' and sibling.has_attr('id') and 'DivShowNextDate' in sibling['id']:
                         next_day_show = True
 
-            if not next_day_show:
-                title = listing.find('h2').find('a').text.strip()
-                time_string = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text
-                hr = int(time_string.split(':')[0])
-                min = int(time_string.split(':')[1])
+            title = listing.find('h2').find('a').text.strip()
+            time_string = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text
+            hr = int(time_string.split(':')[0])
+            min = int(time_string.split(':')[1])
 
-                duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
-                duration = int(re.findall(r'\d+', duration_string)[0])
+            duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
+            duration = int(re.findall(r'\d+', duration_string)[0])
 
-                start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
-                end_time = start_time + datetime.timedelta(minutes=duration)
+            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+            if next_day_show:
+                start_time = start_time + datetime.timedelta(days=1)
+            end_time = start_time + datetime.timedelta(minutes=duration)
 
-                processed_data.append([title, start_time, end_time])
+            processed_data.append([title, start_time, end_time])
 
         return calibrate(processed_data, 'نشرة الأخبار المسائية')
 

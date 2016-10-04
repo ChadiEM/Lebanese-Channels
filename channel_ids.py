@@ -6,7 +6,7 @@ from epg_parsers import *
 
 counter = itertools.count(start=1)
 
-LBC_NAME = 'LBC'
+LBC_NAME = 'LBC Europe'
 LBC_ROUTE_NAME = 'lbc'
 LBC_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
 LBC_EPG_DATA = LBCEPGData()
