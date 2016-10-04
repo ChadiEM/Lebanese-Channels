@@ -38,8 +38,7 @@ class LBCParser(EPGParser):
                 duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
                 duration = int(re.findall(r'\d+', duration_string)[0])
 
-                start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0,
-                                                             microsecond=0) + datetime.timedelta(minutes=shift)
+                start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
                 end_time = start_time + datetime.timedelta(minutes=duration)
 
                 processed_data.append([title, start_time, end_time])
