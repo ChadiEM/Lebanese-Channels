@@ -20,7 +20,7 @@ def epg():
     for channel in CHANNEL_LIST:
         if channel.get_epg_data() is not None and channel.get_epg_parser() is not None:
             response += get_epg(channel.get_channel_id(), channel.get_epg_data().get_fetch_url(),
-                                channel.get_epg_parser(), channel.get_epg_data().get_time_shift())
+                                channel.get_epg_parser())
 
     response += '</tv>'
     return flask.Response(response, mimetype='text/xml')
@@ -30,10 +30,10 @@ def get_channel(channel_id, channel_name):
     return '<channel id="' + str(channel_id) + '"><display-name lang="en">' + channel_name + '</display-name></channel>'
 
 
-def get_epg(channel_id, url, parser, shift):
+def get_epg(channel_id, url, parser):
     try:
         html = make_schedule_request(url)
-        start_end_data = parser.parse(html, shift)
+        start_end_data = parser.parse(html)
         return get_response(start_end_data, channel_id)
     except urllib.error.URLError:
         return ''
@@ -54,8 +54,13 @@ def get_response(start_end_data, channel_id):
     response = ''
 
     for pdata in start_end_data:
-        response += '<programme start="' + pdata[0] + '" stop="' + pdata[1] + '" channel="' + str(channel_id) + '">'
-        response += '<title lang="en">' + pdata[2] + '</title>'
+        response += '<programme start="' + date_to_string(pdata[1]) + '" stop="' + date_to_string(
+            pdata[2]) + '" channel="' + str(channel_id) + '">'
+        response += '<title lang="en">' + pdata[0] + '</title>'
         response += '</programme>'
 
     return response
+
+
+def date_to_string(date):
+    return date.strftime("%Y%m%d %H%M00 +0100")

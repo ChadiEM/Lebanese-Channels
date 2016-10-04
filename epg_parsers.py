@@ -8,35 +8,13 @@ import bs4
 
 class EPGParser(metaclass=abc.ABCMeta):
     @abc.abstractmethod
-    def parse(self, page_data, shift):
+    def parse(self, page_data):
         return
-
-    def process_data(self, data, shift):
-        processed_data = []
-        today = datetime.datetime.now().strftime('%Y%m%d')
-        tomorrow = (datetime.date.today() + datetime.timedelta(days=1)).strftime('%Y%m%d')
-
-        index = 0
-        for data_row in data:
-            start_time = str(int(data_row[1]) + shift).zfill(4)
-            if index + 1 >= len(data):
-                end_datetime = tomorrow + '0000'
-            else:
-                end_datetime = today + str(int(data[index + 1][1]) + shift).zfill(4)
-
-            if int(start_time) >= 0:
-                start = today + start_time + '00 +0100'
-                end = end_datetime + '00 +0100'
-                title = data_row[0]
-                processed_data.append([start, end, title])
-            index += 1
-
-        return processed_data
 
 
 class LBCParser(EPGParser):
-    def parse(self, page_data, shift):
-        data = []
+    def parse(self, page_data):
+        processed_data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
 
         listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
@@ -53,43 +31,74 @@ class LBCParser(EPGParser):
 
             if not next_day_show:
                 title = listing.find('h2').find('a').text.strip()
-                date = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text.replace(':', '')
-                data.append([title, date])
+                time_string = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text
+                hr = int(time_string.split(':')[0])
+                min = int(time_string.split(':')[1])
 
-        return self.process_data(data, shift)
+                duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
+                duration = int(re.findall(r'\d+', duration_string)[0])
+
+                start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0,
+                                                             microsecond=0) + datetime.timedelta(minutes=shift)
+                end_time = start_time + datetime.timedelta(minutes=duration)
+
+                processed_data.append([title, start_time, end_time])
+
+        return calibrate(processed_data, 'نشرة الأخبار المسائية')
 
 
 class MTVParser(EPGParser):
-    def parse(self, page_data, shift):
+    def parse(self, page_data):
         data = []
 
         json_parsed = json.loads(page_data)
 
+        date_string = json_parsed[0]['date']
+        splitted_date = date_string.split('/')
+
+        month = int(splitted_date[0])
+        day = int(splitted_date[1])
+        year = int(splitted_date[2])
+
         for program in json_parsed[0]['programs']:
             name = program['programName']
-            time = program['time'].replace(':', '')
-            data.append([name, time])
 
-        return self.process_data(data, shift)
+            time_string = program['time']
+            hr = int(time_string.split(':')[0])
+            min = int(time_string.split(':')[1])
+
+            start_time = datetime.datetime(year, month, day, hr, min)
+
+            data.append([name, start_time])
+
+        processed_data = append_end_times(data)
+
+        return calibrate(processed_data, 'Prime Time News')
 
 
 class OTVParser(EPGParser):
-    def parse(self, page_data, shift):
+    def parse(self, page_data):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listings = parsed_html.find_all('li')
 
         for listing in listings:
             title = listing.find('div', attrs={'class': 'b2'}).find('h3').text
-            date = listing.find('div', attrs={'class': 'b3'}).find('span').text.split()[0].replace(':', '')
+            time_string = listing.find('div', attrs={'class': 'b3'}).find('span').text.split()[0]
+            hr = int(time_string.split(':')[0])
+            min = int(time_string.split(':')[1])
 
-            data.append([title, date])
+            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
 
-        return self.process_data(data, shift)
+            data.append([title, start_time])
+
+        processed_data = append_end_times(data)
+
+        return calibrate(processed_data, 'News 19:45')
 
 
 class JadeedParser(EPGParser):
-    def parse(self, page_data, shift):
+    def parse(self, page_data):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listing = parsed_html.body.find('div', attrs={'class': 'programListing'})
@@ -97,7 +106,43 @@ class JadeedParser(EPGParser):
 
         for row in rows:
             title = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingTitle'}).text.strip())
-            date = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip()).replace(':', '')
-            data.append([title, date])
+            time_string = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip())
+            hr = int(time_string.split(':')[0])
+            min = int(time_string.split(':')[1])
 
-        return self.process_data(data, shift)
+            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+            data.append([title, start_time])
+
+        processed_data = append_end_times(data)
+
+        return calibrate(processed_data, 'نشرة الاخبار المسائية')
+
+
+def append_end_times(start_datas):
+    processed_data = []
+
+    index = 0
+    for start_data in start_datas:
+        if index + 1 >= len(start_datas):
+            finish_date = start_data[1] + datetime.timedelta(minutes=60)
+        else:
+            finish_date = start_datas[index + 1][1]
+        processed_data.append([start_data[0], start_data[1], finish_date])
+        index += 1
+
+    return processed_data
+
+
+def calibrate(processed_data, match):
+    updated_processed_data = []
+    for current_data in processed_data:
+        if match in current_data[0]:
+            hr = current_data[1].hour
+            shift = 18 - hr
+            break
+
+    for current_data in processed_data:
+        updated_processed_data.append([current_data[0], current_data[1] + datetime.timedelta(hours=shift),
+                                       current_data[2] + datetime.timedelta(hours=shift)])
+
+    return updated_processed_data
