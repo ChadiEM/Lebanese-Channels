@@ -134,6 +134,8 @@ def append_end_times(start_datas):
 
 def calibrate(processed_data, match):
     updated_processed_data = []
+
+    shift = 0
     for current_data in processed_data:
         if match in current_data[0]:
             hr = current_data[1].hour
