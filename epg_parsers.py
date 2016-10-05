@@ -68,7 +68,8 @@ class MTVParser(EPGParser):
 
         for program in json_parsed[0]['programs']:
             name = program['programName']
-            description = re.sub('<[^<>]+>', '', program['description'])
+            description = re.sub('<[^<>]+>', '', program['description']).strip()
+            description = re.sub('[\n\r]+', ' ', description)
 
             category = program['category']
 

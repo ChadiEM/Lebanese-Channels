@@ -79,7 +79,7 @@ def get_response(program_datas, channel_id):
             program_data.get_stop_time()) + '" channel="' + str(channel_id) + '">'
         response += '<title lang="en">' + program_data.get_name() + '</title>'
         if program_data.get_desc() is not None:
-            response += '<desc lang="en">' + program_data.get_desc() + '</desc>'
+            response += '<desc lang="en">' + escape(program_data.get_desc()) + '</desc>'
         if program_data.get_category() is not None:
             response += '<category lang="en">' + escape(program_data.get_category()) + '</category>'
         response += '</programme>'
