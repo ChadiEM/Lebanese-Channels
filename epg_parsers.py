@@ -39,12 +39,14 @@ class LBCParser(EPGParser):
             duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
             duration = int(re.findall(r'\d+', duration_string)[0])
 
+            description = listing.find('h5', attrs={'class': 'AktivGrotesk_W_Rg'}).text
+
             start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
             if next_day_show:
                 start_time = start_time + datetime.timedelta(days=1)
             end_time = start_time + datetime.timedelta(minutes=duration)
 
-            data.append(ProgramData(title, start_time, end_time))
+            data.append(ProgramData(title, start_time, end_time, desc=description))
 
         calibrate(data, 'نشرة الأخبار المسائية')
 
