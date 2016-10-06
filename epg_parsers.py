@@ -154,7 +154,7 @@ def calibrate(program_datas, match):
     for program_data in program_datas:
         if match in program_data.get_name():
             hr = program_data.get_start_time().hour
-            shift = 19 - hr
+            shift = 18 - hr
             break
 
     for program_data in program_datas:
