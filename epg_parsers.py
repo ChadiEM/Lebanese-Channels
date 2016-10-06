@@ -73,13 +73,15 @@ class MTVParser(EPGParser):
 
             category = program['category']
 
+            icon = program['image']
+
             time_string = program['time']
             hr = int(time_string.split(':')[0])
             min = int(time_string.split(':')[1])
 
             start_time = datetime.datetime(year, month, day, hr, min)
 
-            data.append(ProgramData(name, start_time, desc=description, category=category))
+            data.append(ProgramData(name, start_time, desc=description, category=category, icon=icon))
 
         fill_end_times(data)
         calibrate(data, 'Prime Time News')
@@ -152,8 +154,8 @@ def calibrate(program_datas, match):
     for program_data in program_datas:
         if match in program_data.get_name():
             hr = program_data.get_start_time().hour
-            shift = 18 - hr
+            shift = 19 - hr
             break
 
     for program_data in program_datas:
-        program_data.shift(shift)
+        program_data.shift_to_beirut_time(shift)

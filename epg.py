@@ -82,10 +82,12 @@ def get_response(program_datas, channel_id):
             response += '<desc lang="en">' + escape(program_data.get_desc()) + '</desc>'
         if program_data.get_category() is not None:
             response += '<category lang="en">' + escape(program_data.get_category()) + '</category>'
+        if program_data.get_icon() is not None:
+            response += '<icon src="' + program_data.get_icon() + '"/>'
         response += '</programme>'
 
     return response
 
 
 def date_to_string(date):
-    return date.strftime("%Y%m%d %H%M00 +0100")
+    return date.strftime("%Y%m%d%H%M00 %z")

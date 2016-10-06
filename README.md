@@ -9,6 +9,7 @@
   - gunicorn
   - BeautifulSoup4
   - lxml
+  - pytz
 
 ## Run
 ./start.sh
