@@ -1,5 +1,5 @@
 import abc
-import xml
+import xml.etree.ElementTree
 
 import utils
 
