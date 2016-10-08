@@ -16,8 +16,8 @@
 
 ## Configure
 Configure Kodi IPTV-Simple client to use:
-- `http://localhost:12589/channels` as channels URL
-- `http://localhost:12589/epg` as EPG URL
+- `http://<hostname>:12589/channels` as channels URL
+- `http://<hostname>:12589/epg` as EPG URL
 
 ## Output
 ![Example Output](http://i.imgur.com/sDKK2H0.jpg)

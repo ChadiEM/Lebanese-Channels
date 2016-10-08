@@ -1,31 +1,39 @@
 from epg_data import EPGData
 from epg_parsers import EPGParser
+from stream_fetcher import StreamFetcher
 
 
 class Channel(object):
-    def __init__(self, channel_id, name, logo, stream_url=None, route=None, epg_data=None, epg_parser=None):
+    def __init__(self,
+                 channel_id: int,
+                 name: str,
+                 logo: str,
+                 stream_url: str = None,
+                 stream_fetcher: StreamFetcher = None,
+                 epg_data: EPGData = None,
+                 epg_parser: EPGParser = None):
         self.channel_id = channel_id
         self.name = name
         self.logo = logo
         self.url = stream_url
-        self.route = route
+        self.stream_fetcher = stream_fetcher
         self.epg_data = epg_data
         self.epg_parser = epg_parser
 
-    def get_channel_id(self):
+    def get_channel_id(self) -> int:
         return self.channel_id
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.name
 
-    def get_logo(self):
+    def get_logo(self) -> str:
         return self.logo
 
-    def get_url(self):
+    def get_url(self) -> str:
         return self.url
 
-    def get_route(self):
-        return self.route
+    def get_stream_fetcher(self) -> StreamFetcher:
+        return self.stream_fetcher
 
     def get_epg_data(self) -> EPGData:
         return self.epg_data

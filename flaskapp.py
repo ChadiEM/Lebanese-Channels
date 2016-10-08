@@ -1,7 +1,4 @@
-import urllib
-import urllib.error
-import urllib.request
-import xml.etree.ElementTree
+import concurrent.futures
 
 import flask
 import flask_caching
@@ -9,110 +6,60 @@ import flask_caching
 import epg
 from channel_ids import *
 
-channels = flask.Flask(__name__)
-channels.register_blueprint(epg.epg_api)
-cache = flask_caching.Cache(channels, config={'CACHE_TYPE': 'simple'})
-app = channels.wsgi_app
+root = flask.Flask(__name__)
+cache = flask_caching.Cache(root, config={'CACHE_TYPE': 'simple'})
+app = root.wsgi_app
 
 
-@channels.route('/channels')
-def get_channels():
-    host = flask.request.url_root
+@root.route('/channels')
+def channels_route():
+    response_lines = __get_channels_response_lines(flask.request.url_root)
+    return flask.Response('\n'.join(response_lines), mimetype='text/plain')
 
-    response = [generate_headers()]
 
+@root.route('/channel/' + LBC_STREAM_FETCHER.get_route_name())
+@cache.cached(timeout=300)
+def lbc_route():
+    stream_lines = LBC_STREAM_FETCHER.fetch_stream_data()
+    return flask.Response('\n'.join(stream_lines), mimetype='text/plain')
+
+
+@root.route('/channel/' + JADEED_STREAM_FETCHER.get_route_name())
+@cache.cached(timeout=120)
+def jadeed_route():
+    stream_lines = JADEED_STREAM_FETCHER.fetch_stream_data()
+    return flask.Response('\n'.join(stream_lines), mimetype='text/plain')
+
+
+@root.route('/epg')
+@cache.cached(timeout=3600)
+def epg_route():
+    response = __get_epg_response()
+    return flask.Response(response, mimetype='text/xml')
+
+
+def __get_channels_response_lines(host):
+    response = ['#EXTM3U']
     for channel in CHANNEL_LIST:
-        if channel.get_route() is not None:
-            url = host + 'channel/' + channel.get_route()
+        if channel.get_stream_fetcher() is not None:
+            url = host + 'channel/' + channel.get_stream_fetcher().get_route_name()
         else:
             url = channel.get_url()
 
-        response.append(generate_channel(channel.get_name(), channel.get_channel_id(), url, channel.get_logo()))
-
-    return flask.Response('\n'.join(response), mimetype='text/plain')
-
-
-def generate_headers():
-    return '#EXTM3U'
+        response.append('#EXTINF:-1 tvg-id="' + str(
+            channel.get_channel_id()) + '" tvg-logo="' + channel.get_logo() + '", ' + channel.get_name() + '\n' + url)
+    return response
 
 
-def generate_channel(name, channel_id, url, logo):
-    return '#EXTINF:-1 tvg-id="' + str(channel_id) + '" tvg-logo="' + logo + '", ' + name + '\n' + url
-
-
-@channels.route('/channel/jadeed')
-@cache.cached(timeout=120)
-def jadeed():
-    html = make_initial_request('http://player.l1vetv.com/aljadeed/index-1.php')
-
-    playlist = ''
-    for line in html.splitlines():
-        if 'file' in line and 'm3u8' in line:
-            line_splitted = line.split('"')
-            playlist = line_splitted[1]
-
-    html = make_request(playlist)
-
-    return make_response(playlist, html)
-
-
-@channels.route('/channel/lbc')
-@cache.cached(timeout=300)
-def lbc():
-    html = make_initial_request('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
-
-    root = xml.etree.ElementTree.fromstring(html)
-    playlist = root.find('watchLive').text
-    html = make_request(playlist)
-
-    return make_response(playlist, html)
-
-
-@channels.route('/channel/lbc2')
-@cache.cached(timeout=300)
-def lbc_drama():
-    playlist = 'https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8'
-    html = make_request(playlist)
-
-    return make_response(playlist, html)
-
-
-def make_initial_request(url):
-    req = urllib.request.Request(url)
-    response = urllib.request.urlopen(req)
-    html = response.read().decode('utf-8')
-    response.close()
-    return html
-
-
-def make_request(playlist):
-    req = urllib.request.Request(playlist)
-    req.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0')
-    req.add_header('Accept', 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
-    req.add_header('Accept-Language', 'en-US,en;q=0.5')
-    req.add_header('Accept-Encoding', 'gzip, deflate')
-    req.add_header('Connection', 'close')
-    response = urllib.request.urlopen(req)
-    html = response.read().decode('utf-8')
-
-    response.close()
-
-    return html
-
-
-def make_response(playlist, html):
-    list_response = []
-    start_index = playlist.find('.m3u8')
-    if start_index != -1:
-        while playlist[start_index] != '/' and start_index > 0:
-            start_index -= 1
-
-    prefix = playlist[:start_index + 1]
-
-    for line in html.splitlines():
-        if not line.startswith('#'):
-            list_response.append(prefix + line)
-        else:
-            list_response.append(line)
-
-    return flask.Response('\n'.join(list_response), mimetype='text/plain')
+def __get_epg_response():
+    response = '<?xml version="1.0" encoding="utf-8" ?>\n'
+    response += '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
+    response += '<tv>'
+    for channel in CHANNEL_LIST:
+        response += epg.get_channel(channel.get_channel_id(), channel.get_name())
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(epg.get_epg, channel): channel for channel in CHANNEL_LIST}
+        for future in concurrent.futures.as_completed(futures):
+            response += future.result()
+    response += '</tv>'
+    return response

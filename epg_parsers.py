@@ -2,20 +2,25 @@ import abc
 import datetime
 import json
 import re
+from typing import Dict
 
 import bs4
 
+import epg_utils
+import utils
 from program_data import ProgramData
 
 
 class EPGParser(metaclass=abc.ABCMeta):
+    @staticmethod
     @abc.abstractmethod
-    def parse(self, page_data):
+    def parse_schedule_page(page_data: str):
         return
 
 
 class LBCParser(EPGParser):
-    def parse(self, page_data):
+    @staticmethod
+    def parse_schedule_page(page_data: str):
         data = []
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
 
@@ -48,13 +53,12 @@ class LBCParser(EPGParser):
 
             data.append(ProgramData(title, start_time, end_time, desc=description))
 
-        calibrate(data, 'نشرة الأخبار المسائية')
-
         return data
 
 
 class MTVParser(EPGParser):
-    def parse(self, page_data):
+    @staticmethod
+    def parse_schedule_page(page_data: str):
         data = []
 
         json_parsed = json.loads(page_data)
@@ -83,15 +87,16 @@ class MTVParser(EPGParser):
 
             data.append(ProgramData(name, start_time, desc=description, category=category, icon=icon))
 
-        fill_end_times(data)
-        calibrate(data, 'Prime Time News')
+        epg_utils.fill_end_times(data)
 
         return data
 
 
 class OTVParser(EPGParser):
-    def parse(self, page_data):
+    @staticmethod
+    def parse_schedule_page(page_data: str):
         data = []
+        additional_mappings = dict()
 
         date = datetime.datetime.strptime(page_data.split('|@|')[1], '%a, %d %b %Y')
 
@@ -101,22 +106,49 @@ class OTVParser(EPGParser):
         for listing in listings:
             title = listing.find('div', attrs={'class': 'b2'}).find('h3').text
             time_string = listing.find('div', attrs={'class': 'b3'}).find('span').text.split()[0]
-            hr = int(time_string.split(':')[0])
-            min = int(time_string.split(':')[1])
+            time_string_split = time_string.split(':')
+            hr = int(time_string_split[0])
+            min = int(time_string_split[1])
 
             start_time = datetime.datetime(date.year, date.month, date.day, hr, min)
 
-            data.append(ProgramData(title, start_time))
+            program_data = ProgramData(title, start_time)
 
-        fill_end_times(data)
-        calibrate(data, 'News 19:45')
+            program_url = listing.find('div', attrs={'class': 'b1'}).a['href']
+            # if is_ascii(program_url): #urllib3 doens't work with non-ascii urls!
+            additional_mappings[program_data] = program_url
+
+            data.append(program_data)
+
+        epg_utils.fill_end_times(data)
+        # fill_otv_additional_data(additional_mappings)
 
         return data
 
 
+# def fill_otv_additional_data(additional_mappings: Dict[ProgramData, str]):
+#     for program_data, url in additional_mappings.items():
+#         print(url)
+#
+#         html = utils.get_html_response_for(url)
+#         print(html)
+#         parsed_html = bs4.BeautifulSoup(html, 'html.parser')
+#
+#
+#         desc_div = parsed_html.find('div', attrs={'class': 'epitop'})
+#         print(desc_div)
+#         program_data.set_desc(desc_div.h3.text)
+#
+#
+# def is_ascii(s):
+#     return all(ord(c) < 128 for c in s)
+
+
 class JadeedParser(EPGParser):
-    def parse(self, page_data):
+    @staticmethod
+    def parse_schedule_page(page_data: str):
         data = []
+        additional_mappings = dict()
         parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
         listing = parsed_html.body.find('div', attrs={'class': 'programListing'})
         rows = listing.find_all('div', attrs={'class': 'listingRow'})
@@ -124,38 +156,34 @@ class JadeedParser(EPGParser):
         for row in rows:
             title = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingTitle'}).text.strip())
             time_string = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip())
-            hr = int(time_string.split(':')[0])
-            min = int(time_string.split(':')[1])
+            time_string_split = time_string.split(':')
+            hr = int(time_string_split[0])
+            min = int(time_string_split[1])
+
+            links_div = row.find('div', attrs={'class': 'listingLink'})
+            page_url_anchor = links_div.find_all('a')[1]
+            program_id = page_url_anchor['href'].split('=')[1]
 
             start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
-            data.append(ProgramData(title, start_time))
+            program_data = ProgramData(title, start_time)
+            data.append(program_data)
 
-        fill_end_times(data)
-        calibrate(data, 'نشرة الاخبار المسائية')
+            additional_mappings[program_data] = 'http://aljadeed.tv/arabic/about-program?programid=' + program_id
+
+        epg_utils.fill_end_times(data)
+        fill_jadeed_additional_mappings(additional_mappings)
 
         return data
 
 
-def fill_end_times(program_datas):
-    index = 0
-    for program_data in program_datas:
-        if index + 1 >= len(program_datas):
-            finish_date = program_data.get_start_time() + datetime.timedelta(minutes=60)
-        else:
-            finish_date = program_datas[index + 1].get_start_time()
+def fill_jadeed_additional_mappings(additional_mappings: Dict[ProgramData, str]):
+    for program_data, url in additional_mappings.items():
+        html = utils.get_html_response_for(url)
+        parsed_html = bs4.BeautifulSoup(html, 'lxml')
 
-        program_data.set_stop_time(finish_date)
+        image_div = parsed_html.find('div', attrs={'class': 'mainArtistImage'})
+        image_src = 'http://aljadeed.tv' + image_div.img['src']
+        program_data.set_icon(image_src)
 
-        index += 1
-
-
-def calibrate(program_datas, match):
-    shift = 0
-    for program_data in program_datas:
-        if match in program_data.get_name():
-            hr = program_data.get_start_time().hour
-            shift = 18 - hr
-            break
-
-    for program_data in program_datas:
-        program_data.shift_to_beirut_time(shift)
+        text_div = parsed_html.find('div', attrs={'class': 'newsContent'})
+        program_data.set_desc(text_div.text)

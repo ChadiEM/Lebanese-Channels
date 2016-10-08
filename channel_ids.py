@@ -3,11 +3,12 @@ import itertools
 from channel import Channel
 from epg_data import *
 from epg_parsers import *
+from stream_fetcher import *
 
 counter = itertools.count(start=1)
 
 LBC_NAME = 'LBC Europe'
-LBC_ROUTE_NAME = 'lbc'
+LBC_STREAM_FETCHER = LBCStreamFetcher()
 LBC_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
 LBC_EPG_DATA = LBCEPGData()
 LBC_EPG_PARSER = LBCParser()
@@ -25,7 +26,7 @@ OTV_EPG_DATA = OTVEPGData()
 OTV_EPG_PARSER = OTVParser()
 
 JADEED_NAME = 'Aljadeed'
-JADEED_ROUTE_NAME = 'jadeed'
+JADEED_STREAM_FETCHER = JadeedStreamFetcher()
 JADEED_LOGO = 'http://www.aljadeed.tv/images/logo.png'
 JADEED_EPG_DATA = JadeedEPGData()
 JADEED_EPG_PARSER = JadeedParser()
@@ -51,12 +52,13 @@ NOURSAT_SHARQ_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour8satlive/livestream'
 NOURSAT_SHARQ_LOGO = 'http://noursat.tv/mediafiles/channels/sharq-logo.png'
 
 CHANNEL_LIST = [
-    Channel(next(counter), LBC_NAME, LBC_LOGO, route=LBC_ROUTE_NAME, epg_data=LBC_EPG_DATA, epg_parser=LBC_EPG_PARSER),
+    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, epg_data=LBC_EPG_DATA,
+            epg_parser=LBC_EPG_PARSER),
     Channel(next(counter), MTV_NAME, MTV_LOGO, stream_url=MTV_STREAM_URL, epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
     Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL, epg_data=OTV_EPG_DATA,
             epg_parser=OTV_EPG_PARSER),
-    Channel(next(counter), JADEED_NAME, JADEED_LOGO, route=JADEED_ROUTE_NAME, epg_data=JADEED_EPG_DATA,
+    Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER, epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
     Channel(next(counter), FUTURE_NAME, FUTURE_LOGO, stream_url=FUTURE_STREAM_URL),
     Channel(next(counter), MANAR_NAME, MANAR_LOGO, stream_url=MANAR_STREAM_URL),
