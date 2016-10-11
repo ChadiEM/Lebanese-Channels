@@ -72,8 +72,8 @@ class MTVParser(EPGParser):
 
         for program in json_parsed[0]['programs']:
             name = program['programName']
-            description = re.sub('<[^<>]+>', '', program['description']).strip()
-            description = re.sub('[\n\r]+', ' ', description)
+            description = re.sub(r'<[^<>]+>', '', program['description']).strip()
+            description = re.sub(r'[\n\r]+', ' ', description)
 
             category = program['category']
 
@@ -115,33 +115,13 @@ class OTVParser(EPGParser):
             program_data = ProgramData(title, start_time)
 
             program_url = listing.find('div', attrs={'class': 'b1'}).a['href']
-            # if is_ascii(program_url): #urllib3 doens't work with non-ascii urls!
             additional_mappings[program_data] = program_url
 
             data.append(program_data)
 
         epg_utils.fill_end_times(data)
-        # fill_otv_additional_data(additional_mappings)
 
         return data
-
-
-# def fill_otv_additional_data(additional_mappings: Dict[ProgramData, str]):
-#     for program_data, url in additional_mappings.items():
-#         print(url)
-#
-#         html = utils.get_html_response_for(url)
-#         print(html)
-#         parsed_html = bs4.BeautifulSoup(html, 'html.parser')
-#
-#
-#         desc_div = parsed_html.find('div', attrs={'class': 'epitop'})
-#         print(desc_div)
-#         program_data.set_desc(desc_div.h3.text)
-#
-#
-# def is_ascii(s):
-#     return all(ord(c) < 128 for c in s)
 
 
 class JadeedParser(EPGParser):
@@ -183,7 +163,7 @@ def fill_jadeed_additional_mappings(additional_mappings: Dict[ProgramData, str])
 
         image_div = parsed_html.find('div', attrs={'class': 'mainArtistImage'})
         image_src = 'http://aljadeed.tv' + image_div.img['src']
-        program_data.set_icon(image_src)
+        program_data.icon = image_src
 
         text_div = parsed_html.find('div', attrs={'class': 'newsContent'})
-        program_data.set_desc(text_div.text)
+        program_data.desc = text_div.text

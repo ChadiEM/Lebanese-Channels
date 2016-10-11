@@ -12,31 +12,38 @@ class Channel(object):
                  stream_fetcher: StreamFetcher = None,
                  epg_data: EPGData = None,
                  epg_parser: EPGParser = None):
-        self.channel_id = channel_id
-        self.name = name
-        self.logo = logo
-        self.url = stream_url
-        self.stream_fetcher = stream_fetcher
-        self.epg_data = epg_data
-        self.epg_parser = epg_parser
+        self._channel_id = channel_id
+        self._name = name
+        self._logo = logo
+        self._url = stream_url
+        self._stream_fetcher = stream_fetcher
+        self._epg_data = epg_data
+        self._epg_parser = epg_parser
 
-    def get_channel_id(self) -> int:
-        return self.channel_id
+    @property
+    def channel_id(self) -> int:
+        return self._channel_id
 
-    def get_name(self) -> str:
-        return self.name
+    @property
+    def name(self) -> str:
+        return self._name
 
-    def get_logo(self) -> str:
-        return self.logo
+    @property
+    def logo(self) -> str:
+        return self._logo
 
-    def get_url(self) -> str:
-        return self.url
+    @property
+    def url(self) -> str:
+        return self._url
 
-    def get_stream_fetcher(self) -> StreamFetcher:
-        return self.stream_fetcher
+    @property
+    def stream_fetcher(self) -> StreamFetcher:
+        return self._stream_fetcher
 
-    def get_epg_data(self) -> EPGData:
-        return self.epg_data
+    @property
+    def epg_data(self) -> EPGData:
+        return self._epg_data
 
-    def get_epg_parser(self) -> EPGParser:
-        return self.epg_parser
+    @property
+    def epg_parser(self) -> EPGParser:
+        return self._epg_parser

@@ -4,46 +4,56 @@ import pytz
 
 
 class ProgramData(object):
-    def __init__(self, name: str, start_time: datetime, stop_time=None, desc=None, category=None, icon=None):
-        self.name = name
-        self.start_time = start_time
-        self.stop_time = stop_time
-        self.desc = desc
-        self.category = category
-        self.icon = icon
+    def __init__(self, name: str, start_time: datetime, stop_time: datetime = None, desc: str = None,
+                 category: str = None, icon: str = None):
+        self._name = name
+        self._start_time = start_time
+        self._stop_time = stop_time
+        self._desc = desc
+        self._category = category
+        self._icon = icon
 
-    def get_name(self) -> str:
-        return self.name
+    @property
+    def name(self) -> str:
+        return self._name
 
-    def get_start_time(self) -> datetime:
-        return self.start_time
+    @property
+    def start_time(self) -> datetime:
+        return self._start_time
 
-    def get_stop_time(self) -> datetime:
-        return self.stop_time
+    @property
+    def stop_time(self) -> datetime:
+        return self._stop_time
+
+    @property
+    def category(self) -> str:
+        return self._category
+
+    @property
+    def desc(self) -> str:
+        return self._desc
+
+    @property
+    def icon(self) -> str:
+        return self._icon
+
+    @stop_time.setter
+    def stop_time(self, stop_time: datetime):
+        self._stop_time = stop_time
+
+    @desc.setter
+    def desc(self, desc: str):
+        self._desc = desc
+
+    @icon.setter
+    def icon(self, icon: str):
+        self._icon = icon
 
     def shift_to_paris_time(self, hours):
         shift = datetime.timedelta(hours=hours)
-        self.start_time = self.start_time + shift
-        self.stop_time = self.stop_time + shift
+        self._start_time = self._start_time + shift
+        self._stop_time = self._stop_time + shift
 
         paris_time = datetime.datetime.now(pytz.timezone('Europe/Paris'))
-        self.start_time = self.start_time.replace(tzinfo=paris_time.tzinfo)
-        self.stop_time = self.stop_time.replace(tzinfo=paris_time.tzinfo)
-
-    def set_stop_time(self, stop_time: datetime):
-        self.stop_time = stop_time
-
-    def get_category(self) -> str:
-        return self.category
-
-    def get_desc(self) -> str:
-        return self.desc
-
-    def set_desc(self, desc: str):
-        self.desc = desc
-
-    def get_icon(self) -> str:
-        return self.icon
-
-    def set_icon(self, icon: str):
-        self.icon = icon
+        self._start_time = self._start_time.replace(tzinfo=paris_time.tzinfo)
+        self._stop_time = self._stop_time.replace(tzinfo=paris_time.tzinfo)

@@ -1,9 +1,9 @@
 import itertools
 
 from channel import Channel
-from epg_data import *
-from epg_parsers import *
-from stream_fetcher import *
+from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData
+from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser
+from stream_fetcher import LBCStreamFetcher, JadeedStreamFetcher
 
 counter = itertools.count(start=1)
 

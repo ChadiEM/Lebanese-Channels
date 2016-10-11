@@ -15,10 +15,10 @@ def get_channel(channel_id, channel_name):
 
 
 def get_epg(channel: Channel):
-    if channel.get_epg_data() is None or channel.get_epg_parser() is None:
+    if channel.epg_data is None or channel.epg_parser is None:
         return ''
 
-    urls = channel.get_epg_data().get_fetch_url()
+    urls = channel.epg_data.get_fetch_url()
 
     if isinstance(urls, list):
         response = ''
@@ -35,26 +35,26 @@ def get_epg(channel: Channel):
 def __fetch_epg(channel: Channel, url: str):
     try:
         html = utils.get_html_response_for(url)
-        start_end_data = channel.get_epg_parser().parse_schedule_page(html)
-        epg_utils.normalize_times(start_end_data, channel.get_epg_data().get_normalization())
-        return get_response(start_end_data, channel.get_channel_id())
+        start_end_data = channel.epg_parser.parse_schedule_page(html)
+        epg_utils.normalize_times(start_end_data, channel.epg_data.get_normalization())
+        return get_response(start_end_data, channel.channel_id)
     except urllib.error.URLError:
         return ''
 
 
-def get_response(program_datas: List[ProgramData], channel_id: int):
+def get_response(program_data_list: List[ProgramData], channel_id: int):
     response = ''
 
-    for program_data in program_datas:
-        response += '<programme start="' + date_to_string(program_data.get_start_time()) + '" stop="' + date_to_string(
-            program_data.get_stop_time()) + '" channel="' + str(channel_id) + '">'
-        response += '<title lang="en">' + program_data.get_name() + '</title>'
-        if program_data.get_desc() is not None:
-            response += '<desc lang="en">' + escape(program_data.get_desc()) + '</desc>'
-        if program_data.get_category() is not None:
-            response += '<category lang="en">' + escape(program_data.get_category()) + '</category>'
-        if program_data.get_icon() is not None:
-            response += '<icon src="' + program_data.get_icon() + '"/>'
+    for program_data in program_data_list:
+        response += '<programme start="' + date_to_string(program_data.start_time) + '" stop="' + date_to_string(
+            program_data.stop_time) + '" channel="' + str(channel_id) + '">'
+        response += '<title lang="en">' + program_data.name + '</title>'
+        if program_data.desc is not None:
+            response += '<desc lang="en">' + escape(program_data.desc) + '</desc>'
+        if program_data.category is not None:
+            response += '<category lang="en">' + escape(program_data.category) + '</category>'
+        if program_data.icon is not None:
+            response += '<icon src="' + program_data.icon + '"/>'
         response += '</programme>'
 
     return response

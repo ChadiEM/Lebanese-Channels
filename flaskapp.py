@@ -4,7 +4,7 @@ import flask
 import flask_caching
 
 import epg
-from channel_ids import *
+from channel_ids import CHANNEL_LIST, LBC_STREAM_FETCHER, JADEED_STREAM_FETCHER
 
 root = flask.Flask(__name__)
 cache = flask_caching.Cache(root, config={'CACHE_TYPE': 'simple'})
@@ -41,13 +41,13 @@ def epg_route():
 def __get_channels_response_lines(host):
     response = ['#EXTM3U']
     for channel in CHANNEL_LIST:
-        if channel.get_stream_fetcher() is not None:
-            url = host + 'channel/' + channel.get_stream_fetcher().get_route_name()
+        if channel.stream_fetcher is not None:
+            url = host + 'channel/' + channel.stream_fetcher.get_route_name()
         else:
-            url = channel.get_url()
+            url = channel.url
 
         response.append('#EXTINF:-1 tvg-id="' + str(
-            channel.get_channel_id()) + '" tvg-logo="' + channel.get_logo() + '", ' + channel.get_name() + '\n' + url)
+            channel.channel_id) + '" tvg-logo="' + channel.logo + '", ' + channel.name + '\n' + url)
     return response
 
 
@@ -56,7 +56,7 @@ def __get_epg_response():
     response += '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
     response += '<tv>'
     for channel in CHANNEL_LIST:
-        response += epg.get_channel(channel.get_channel_id(), channel.get_name())
+        response += epg.get_channel(channel.channel_id, channel.name)
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         futures = {executor.submit(epg.get_epg, channel): channel for channel in CHANNEL_LIST}
         for future in concurrent.futures.as_completed(futures):
