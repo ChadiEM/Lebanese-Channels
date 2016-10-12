@@ -5,17 +5,21 @@ from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData
 from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser
 from stream_fetcher import LBCStreamFetcher, JadeedStreamFetcher
 
+EU = 'eu'
+US = 'us'
 counter = itertools.count(start=1)
 
 LBC_NAME = 'LBC Europe'
 LBC_STREAM_FETCHER = LBCStreamFetcher()
 LBC_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
+LBC_NOT_AVAILABLE_IN = [US]
 LBC_EPG_DATA = LBCEPGData()
 LBC_EPG_PARSER = LBCParser()
 
 MTV_NAME = 'MTV'
 MTV_STREAM_URL = 'http://livestreaming1.itworkscdn.net/mtvlive/smil:mtvmob.smil/playlist.m3u8'
 MTV_LOGO = 'http://mtv.com.lb/Content/images/mtv.jpg'
+MTV_NOT_AVAILABLE_IN = [US]
 MTV_EPG_DATA = MTVEPGData()
 MTV_EPG_PARSER = MTVParser()
 
@@ -52,9 +56,11 @@ NOURSAT_SHARQ_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour8satlive/livestream'
 NOURSAT_SHARQ_LOGO = 'http://noursat.tv/mediafiles/channels/sharq-logo.png'
 
 CHANNEL_LIST = [
-    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, epg_data=LBC_EPG_DATA,
+    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
+            epg_data=LBC_EPG_DATA,
             epg_parser=LBC_EPG_PARSER),
-    Channel(next(counter), MTV_NAME, MTV_LOGO, stream_url=MTV_STREAM_URL, epg_data=MTV_EPG_DATA,
+    Channel(next(counter), MTV_NAME, MTV_LOGO, stream_url=MTV_STREAM_URL, not_available_in=MTV_NOT_AVAILABLE_IN,
+            epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
     Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL, epg_data=OTV_EPG_DATA,
             epg_parser=OTV_EPG_PARSER),

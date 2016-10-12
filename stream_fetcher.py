@@ -1,5 +1,6 @@
 import abc
 import xml.etree.ElementTree
+from typing import List
 
 import utils
 
@@ -7,22 +8,22 @@ import utils
 class StreamFetcher(metaclass=abc.ABCMeta):
     @staticmethod
     @abc.abstractmethod
-    def get_route_name():
+    def get_route_name() -> str:
         return
 
     @staticmethod
     @abc.abstractmethod
-    def fetch_stream_data():
+    def fetch_stream_data() -> List[str]:
         return
 
 
 class LBCStreamFetcher(StreamFetcher):
     @staticmethod
-    def get_route_name():
+    def get_route_name() -> str:
         return 'lbc'
 
     @staticmethod
-    def fetch_stream_data():
+    def fetch_stream_data() -> List[str]:
         html = utils.get_html_response_for('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
 
         root = xml.etree.ElementTree.fromstring(html)
@@ -34,11 +35,11 @@ class LBCStreamFetcher(StreamFetcher):
 
 class JadeedStreamFetcher(StreamFetcher):
     @staticmethod
-    def get_route_name():
+    def get_route_name() -> str:
         return 'jadeed'
 
     @staticmethod
-    def fetch_stream_data():
+    def fetch_stream_data() -> List[str]:
         html = utils.get_html_response_for('http://player.l1vetv.com/aljadeed/index-1.php')
 
         playlist = ''
@@ -52,7 +53,7 @@ class JadeedStreamFetcher(StreamFetcher):
         return make_response(playlist, html)
 
 
-def make_response(playlist, html):
+def make_response(playlist: str, html: str) -> List[str]:
     list_response = []
     start_index = playlist.find('.m3u8')
     if start_index != -1:

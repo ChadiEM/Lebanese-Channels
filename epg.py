@@ -1,4 +1,5 @@
 import concurrent.futures
+import datetime
 import urllib
 import urllib.error
 from typing import List
@@ -60,5 +61,5 @@ def get_response(program_data_list: List[ProgramData], channel_id: int):
     return response
 
 
-def date_to_string(date):
+def date_to_string(date: datetime):
     return date.strftime("%Y%m%d%H%M00 %z")

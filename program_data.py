@@ -49,7 +49,7 @@ class ProgramData(object):
     def icon(self, icon: str):
         self._icon = icon
 
-    def shift_to_paris_time(self, hours):
+    def shift_to_paris_time(self, hours: int):
         shift = datetime.timedelta(hours=hours)
         self._start_time = self._start_time + shift
         self._stop_time = self._stop_time + shift

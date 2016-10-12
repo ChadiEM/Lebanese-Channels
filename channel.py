@@ -1,3 +1,5 @@
+from typing import List
+
 from epg_data import EPGData
 from epg_parsers import EPGParser
 from stream_fetcher import StreamFetcher
@@ -10,6 +12,7 @@ class Channel(object):
                  logo: str,
                  stream_url: str = None,
                  stream_fetcher: StreamFetcher = None,
+                 not_available_in: List[str] = None,
                  epg_data: EPGData = None,
                  epg_parser: EPGParser = None):
         self._channel_id = channel_id
@@ -17,6 +20,7 @@ class Channel(object):
         self._logo = logo
         self._url = stream_url
         self._stream_fetcher = stream_fetcher
+        self._not_available_in = not_available_in
         self._epg_data = epg_data
         self._epg_parser = epg_parser
 
@@ -47,3 +51,6 @@ class Channel(object):
     @property
     def epg_parser(self) -> EPGParser:
         return self._epg_parser
+
+    def available_in(self, location: str) -> bool:
+        return (self._not_available_in is None) or (location not in self._not_available_in)
