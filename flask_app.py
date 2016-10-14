@@ -70,8 +70,8 @@ def __get_channels_response_lines(host: str, location: str) -> Response:
 
 
 def __get_stream_lines(fetcher) -> Response:
-    stream_lines_list = fetcher.fetch_stream_data()
-    return Response('\n'.join(stream_lines_list), mimetype='text/plain')
+    playlist = fetcher.fetch_stream_url()
+    return flask.redirect(playlist, code=302)
 
 
 def __get_epg_response(location: str) -> Response:
