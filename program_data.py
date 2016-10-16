@@ -4,8 +4,13 @@ import pytz
 
 
 class ProgramData(object):
-    def __init__(self, name: str, start_time: datetime, stop_time: datetime = None, desc: str = None,
-                 category: str = None, icon: str = None):
+    def __init__(self,
+                 name: str,
+                 start_time: datetime,
+                 stop_time: datetime = None,
+                 desc: str = None,
+                 category: str = None,
+                 icon: str = None):
         self._name = name
         self._start_time = start_time
         self._stop_time = stop_time
