@@ -8,6 +8,7 @@ from xml.sax.saxutils import escape
 import epg_utils
 import utils
 from channel import Channel
+from epg_data import PostURL
 from program_data import ProgramData
 
 
@@ -19,16 +20,17 @@ def get_epg(channel: Channel):
     if channel.epg_data is None or channel.epg_parser is None:
         return ''
 
-    urls = channel.epg_data.get_fetch_url()
+    urls = channel.epg_data.get_fetch_urls()
 
-    if isinstance(urls, list):
-        response = ''
-        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            futures = {executor.submit(__fetch_epg, channel, url): url for url in urls}
-            for future in concurrent.futures.as_completed(futures):
-                response += future.result()
-    else:
-        response = __fetch_epg(channel, urls)
+    response = ''
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+        futures = {executor.submit(__fetch_epg, channel, url): url for url in urls}
+        for future in concurrent.futures.as_completed(futures):
+            response += future.result()
+
+    post_url = channel.epg_data.get_post_url()
+    if post_url is not None:
+        response += __fetch_post_epg(channel, post_url)
 
     return response
 
@@ -36,6 +38,16 @@ def get_epg(channel: Channel):
 def __fetch_epg(channel: Channel, url: str):
     try:
         html = utils.get_html_response_for(url)
+        start_end_data = channel.epg_parser.parse_schedule_page(html)
+        epg_utils.normalize_times(start_end_data, channel.epg_data.get_normalization())
+        return get_response(start_end_data, channel.channel_id)
+    except urllib.error.URLError:
+        return ''
+
+
+def __fetch_post_epg(channel: Channel, post_data: PostURL):
+    try:
+        html = utils.get_post_html_response_for(post_data)
         start_end_data = channel.epg_parser.parse_schedule_page(html)
         epg_utils.normalize_times(start_end_data, channel.epg_data.get_normalization())
         return get_response(start_end_data, channel.channel_id)

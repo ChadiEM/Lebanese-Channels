@@ -119,7 +119,7 @@ def __get_epg_response(location: str) -> Response:
         response_string += epg.get_channel(current_channel.channel_id, current_channel.name)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(epg.get_epg, channel): channel for channel in
+        futures = {executor.submit(epg.get_epg, current_channel): current_channel for current_channel in
                    __filter_locations(CHANNEL_LIST, location)}
         for future in concurrent.futures.as_completed(futures):
             response_string += future.result()
