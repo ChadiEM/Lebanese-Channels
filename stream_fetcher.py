@@ -32,6 +32,24 @@ class LBCStreamFetcher(StreamFetcher):
         return playlist
 
 
+class MTVStreamFetcher(StreamFetcher):
+    @staticmethod
+    def get_route_name() -> str:
+        return 'mtv'
+
+    @staticmethod
+    def fetch_stream_url() -> str:
+        html = utils.get_html_response_for('http://mtv.com.lb/Live/Player')
+
+        playlist = ''
+        for line in html.splitlines():
+            if 'file' in line and 'm3u8' in line:
+                line_splitted = line.split('"')
+                playlist = line_splitted[1]
+
+        return playlist
+
+
 class JadeedStreamFetcher(StreamFetcher):
     @staticmethod
     def get_route_name() -> str:
