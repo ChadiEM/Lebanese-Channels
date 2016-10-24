@@ -24,7 +24,7 @@ MTV_EPG_DATA = MTVEPGData()
 MTV_EPG_PARSER = MTVParser()
 
 OTV_NAME = 'OTV'
-OTV_STREAM_URL = 'http://livestreaming.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8'
+OTV_STREAM_URL = 'https://svs.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8'
 OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
 OTV_EPG_DATA = OTVEPGData()
 OTV_EPG_PARSER = OTVParser()
