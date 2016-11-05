@@ -162,7 +162,7 @@ def fill_jadeed_additional_mappings(additional_mappings: Dict[ProgramData, str])
         parsed_html = bs4.BeautifulSoup(html, 'lxml')
 
         image_div = parsed_html.find('div', attrs={'class': 'mainArtistImage'})
-        image_src = 'http://aljadeed.tv' + image_div.img['src']
+        image_src = 'http://aljadeed.tv' + image_div.img['src'].replace(" ", "%20")
         program_data.icon = image_src
 
         text_div = parsed_html.find('div', attrs={'class': 'newsContent'})
