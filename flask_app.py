@@ -4,6 +4,7 @@ from typing import List
 import flask
 import flask_caching
 from flask import Response
+from flask import send_file
 
 import epg
 from channel import Channel
@@ -15,14 +16,16 @@ cache = flask_caching.Cache(root, config={'CACHE_TYPE': 'simple'})
 app = root.wsgi_app
 
 
-@cache.cached(timeout=120)
+@cache.cached(timeout=60)
 def channel_stream():
     url_rule = flask.request.url_rule.rule
     target = url_rule.split('/channel/')[1]
     for current_channel in CHANNEL_LIST:
-        if current_channel.stream_fetcher is not None:
-            if current_channel.stream_fetcher.get_route_name() == target:
+        if current_channel.stream_fetcher is not None and current_channel.stream_fetcher.get_route_name() == target:
+            try:
                 return __get_stream_lines(current_channel.stream_fetcher)
+            except:
+                return __void()
 
 
 for channel in CHANNEL_LIST:
@@ -108,6 +111,10 @@ def __get_channels_response_lines(host: str, result_format: str, location: str) 
 def __get_stream_lines(fetcher) -> Response:
     playlist = fetcher.fetch_stream_url()
     return flask.redirect(playlist, code=302)
+
+
+def __void():
+    return send_file("no-signal.mp4", mimetype='video/mp4')
 
 
 def __get_epg_response(location: str) -> Response:
