@@ -109,8 +109,8 @@ def __get_channels_response_lines(host: str, result_format: str, location: str) 
 
 
 def __get_stream_lines(fetcher) -> Response:
-    playlist = fetcher.fetch_stream_url()
-    return flask.redirect(playlist, code=302)
+    stream_lines_list = fetcher.fetch_stream_data()
+    return Response('\n'.join(stream_lines_list), mimetype='application/vnd.apple.mpegurl')
 
 
 def __void():

@@ -13,7 +13,7 @@ class StreamFetcher(metaclass=abc.ABCMeta):
 
     @staticmethod
     @abc.abstractmethod
-    def fetch_stream_url() -> List[str]:
+    def fetch_stream_data() -> List[str]:
         return
 
 
@@ -23,13 +23,14 @@ class LBCStreamFetcher(StreamFetcher):
         return 'lbc'
 
     @staticmethod
-    def fetch_stream_url() -> str:
+    def fetch_stream_data() -> str:
         html = utils.get_html_response_for('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
 
         root = xml.etree.ElementTree.fromstring(html)
         playlist = root.find('watchLive').text
 
-        return playlist
+        html = utils.get_html_response_for(playlist)
+        return make_response(playlist, html)
 
 
 class MTVStreamFetcher(StreamFetcher):
@@ -38,7 +39,7 @@ class MTVStreamFetcher(StreamFetcher):
         return 'mtv'
 
     @staticmethod
-    def fetch_stream_url() -> str:
+    def fetch_stream_data() -> str:
         html = utils.get_html_response_for('http://mtv.com.lb/Live/Player')
 
         playlist = ''
@@ -47,7 +48,8 @@ class MTVStreamFetcher(StreamFetcher):
                 line_splitted = line.split('"')
                 playlist = line_splitted[1]
 
-        return playlist
+        html = utils.get_html_response_for(playlist)
+        return make_response(playlist, html)
 
 
 class JadeedStreamFetcher(StreamFetcher):
@@ -56,7 +58,7 @@ class JadeedStreamFetcher(StreamFetcher):
         return 'jadeed'
 
     @staticmethod
-    def fetch_stream_url() -> str:
+    def fetch_stream_data() -> str:
         html = utils.get_html_response_for('http://player.l1vetv.com/aljadeed/index-1.php')
 
         playlist = ''
@@ -65,7 +67,8 @@ class JadeedStreamFetcher(StreamFetcher):
                 line_splitted = line.split('"')
                 playlist = line_splitted[1]
 
-        return playlist
+        html = utils.get_html_response_for(playlist)
+        return make_response(playlist, html)
 
 
 def make_response(playlist: str, html: str) -> List[str]:
