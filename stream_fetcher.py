@@ -52,6 +52,25 @@ class MTVStreamFetcher(StreamFetcher):
         return make_response(playlist, html)
 
 
+class OTVStreamFetcher(StreamFetcher):
+    @staticmethod
+    def get_route_name() -> str:
+        return 'otv'
+
+    @staticmethod
+    def fetch_stream_data() -> str:
+        html = utils.get_html_response_for('http://www.otv.com.lb/new-live.php')
+
+        playlist = ''
+        for line in html.splitlines():
+            if 'file' in line and 'm3u8' in line:
+                line_splitted = line.split('"')
+                playlist = line_splitted[1]
+
+        html = utils.get_html_response_for(playlist)
+        return make_response(playlist, html)
+
+
 class JadeedStreamFetcher(StreamFetcher):
     @staticmethod
     def get_route_name() -> str:

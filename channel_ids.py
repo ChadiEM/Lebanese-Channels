@@ -3,7 +3,7 @@ import itertools
 from channel import Channel
 from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData, NoursatEPGData
 from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser, NoursatParser
-from stream_fetcher import LBCStreamFetcher, MTVStreamFetcher, JadeedStreamFetcher
+from stream_fetcher import LBCStreamFetcher, MTVStreamFetcher, OTVStreamFetcher, JadeedStreamFetcher
 
 EU = 'eu'
 US = 'us'
@@ -24,7 +24,7 @@ MTV_EPG_DATA = MTVEPGData()
 MTV_EPG_PARSER = MTVParser()
 
 OTV_NAME = 'OTV'
-OTV_STREAM_URL = 'https://svs.itworkscdn.net/otvmobile/otvlive_2/playlist.m3u8'
+OTV_STREAM_FETCHER = OTVStreamFetcher()
 OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
 OTV_EPG_DATA = OTVEPGData()
 OTV_EPG_PARSER = OTVParser()
@@ -64,7 +64,7 @@ CHANNEL_LIST = [
     Channel(next(counter), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
-    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL,
+    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_fetcher=OTV_STREAM_FETCHER,
             epg_data=OTV_EPG_DATA,
             epg_parser=OTV_EPG_PARSER),
     Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
