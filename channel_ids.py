@@ -41,7 +41,7 @@ FUTURE_LOGO = 'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/go
 
 NBN_NAME = 'NBN'
 NBN_STREAM_FETCHER = GenericStreamFetcher('nbn', 'http://player.l1vetv.com/nbn')
-NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-retina-1.png'
+NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-normal-2.png'
 
 MANAR_NAME = 'Al Manar'
 MANAR_STREAM_URL = 'http://edge.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
