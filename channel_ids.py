@@ -3,7 +3,7 @@ import itertools
 from channel import Channel
 from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData, NoursatEPGData
 from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser, NoursatParser
-from stream_fetcher import LBCStreamFetcher, MTVStreamFetcher, OTVStreamFetcher, JadeedStreamFetcher
+from stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
 
 EU = 'eu'
 US = 'us'
@@ -17,20 +17,20 @@ LBC_EPG_DATA = LBCEPGData()
 LBC_EPG_PARSER = LBCParser()
 
 MTV_NAME = 'MTV'
-MTV_STREAM_FETCHER = MTVStreamFetcher()
+MTV_STREAM_FETCHER = GenericStreamFetcher('mtv', 'http://mtv.com.lb/Live/Player')
 MTV_LOGO = 'http://mtv.com.lb/Content/images/mtv.jpg'
 MTV_NOT_AVAILABLE_IN = [US]
 MTV_EPG_DATA = MTVEPGData()
 MTV_EPG_PARSER = MTVParser()
 
 OTV_NAME = 'OTV'
-OTV_STREAM_FETCHER = OTVStreamFetcher()
+OTV_STREAM_FETCHER = GenericStreamFetcher('otv', 'http://www.otv.com.lb/new-live.php')
 OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
 OTV_EPG_DATA = OTVEPGData()
 OTV_EPG_PARSER = OTVParser()
 
 JADEED_NAME = 'Aljadeed'
-JADEED_STREAM_FETCHER = JadeedStreamFetcher()
+JADEED_STREAM_FETCHER = GenericStreamFetcher('jadeed', 'http://player.l1vetv.com/aljadeed/index-1.php')
 JADEED_LOGO = 'http://www.aljadeed.tv/images/logo.png'
 JADEED_EPG_DATA = JadeedEPGData()
 JADEED_EPG_PARSER = JadeedParser()
@@ -38,6 +38,10 @@ JADEED_EPG_PARSER = JadeedParser()
 FUTURE_NAME = 'Future TV'
 FUTURE_STREAM_URL = 'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8'
 FUTURE_LOGO = 'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png'
+
+NBN_NAME = 'NBN'
+NBN_STREAM_FETCHER = GenericStreamFetcher('nbn', 'http://player.l1vetv.com/nbn')
+NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-retina-1.png'
 
 MANAR_NAME = 'Al Manar'
 MANAR_STREAM_URL = 'http://edge.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
@@ -70,6 +74,7 @@ CHANNEL_LIST = [
     Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
             epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
+    Channel(next(counter), NBN_NAME, NBN_LOGO, stream_fetcher=NBN_STREAM_FETCHER),
     Channel(next(counter), FUTURE_NAME, FUTURE_LOGO, stream_url=FUTURE_STREAM_URL),
     Channel(next(counter), MANAR_NAME, MANAR_LOGO, stream_url=MANAR_STREAM_URL),
     Channel(next(counter), NOURSAT_NAME, NOURSAT_LOGO, stream_url=NOURSAT_STREAM_URL,

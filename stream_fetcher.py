@@ -6,24 +6,20 @@ import utils
 
 
 class StreamFetcher(metaclass=abc.ABCMeta):
-    @staticmethod
     @abc.abstractmethod
-    def get_route_name() -> str:
+    def get_route_name(self) -> str:
         return
 
-    @staticmethod
     @abc.abstractmethod
-    def fetch_stream_data() -> List[str]:
+    def fetch_stream_data(self) -> List[str]:
         return
 
 
 class LBCStreamFetcher(StreamFetcher):
-    @staticmethod
-    def get_route_name() -> str:
+    def get_route_name(self) -> str:
         return 'lbc'
 
-    @staticmethod
-    def fetch_stream_data() -> str:
+    def fetch_stream_data(self) -> str:
         html = utils.get_html_response_for('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
 
         root = xml.etree.ElementTree.fromstring(html)
@@ -33,52 +29,16 @@ class LBCStreamFetcher(StreamFetcher):
         return make_response(playlist, html)
 
 
-class MTVStreamFetcher(StreamFetcher):
-    @staticmethod
-    def get_route_name() -> str:
-        return 'mtv'
+class GenericStreamFetcher(StreamFetcher):
+    def __init__(self, route_name, url):
+        self.route_name = route_name
+        self.url = url
 
-    @staticmethod
-    def fetch_stream_data() -> str:
-        html = utils.get_html_response_for('http://mtv.com.lb/Live/Player')
+    def get_route_name(self) -> str:
+        return self.route_name
 
-        playlist = ''
-        for line in html.splitlines():
-            if 'file' in line and 'm3u8' in line:
-                line_splitted = line.split('"')
-                playlist = line_splitted[1]
-
-        html = utils.get_html_response_for(playlist)
-        return make_response(playlist, html)
-
-
-class OTVStreamFetcher(StreamFetcher):
-    @staticmethod
-    def get_route_name() -> str:
-        return 'otv'
-
-    @staticmethod
-    def fetch_stream_data() -> str:
-        html = utils.get_html_response_for('http://www.otv.com.lb/new-live.php')
-
-        playlist = ''
-        for line in html.splitlines():
-            if 'file' in line and 'm3u8' in line:
-                line_splitted = line.split('"')
-                playlist = line_splitted[1]
-
-        html = utils.get_html_response_for(playlist)
-        return make_response(playlist, html)
-
-
-class JadeedStreamFetcher(StreamFetcher):
-    @staticmethod
-    def get_route_name() -> str:
-        return 'jadeed'
-
-    @staticmethod
-    def fetch_stream_data() -> str:
-        html = utils.get_html_response_for('http://player.l1vetv.com/aljadeed/index-1.php')
+    def fetch_stream_data(self) -> str:
+        html = utils.get_html_response_for(self.url)
 
         playlist = ''
         for line in html.splitlines():
