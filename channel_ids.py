@@ -3,13 +3,14 @@ import itertools
 from channel import Channel
 from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData, NoursatEPGData
 from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser, NoursatParser
+from stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
 
 EU = 'eu'
 US = 'us'
 counter = itertools.count(start=1)
 
 LBC_NAME = 'LBC Europe'
-LBC_STREAM_URL = 'https://svs.itworkscdn.net/lbcgrouplive/smil:lbclive.smil/playlist.m3u8'
+LBC_STREAM_FETCHER = LBCStreamFetcher()
 LBC_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
 LBC_NOT_AVAILABLE_IN = [US]
 LBC_EPG_DATA = LBCEPGData()
@@ -29,7 +30,7 @@ OTV_EPG_DATA = OTVEPGData()
 OTV_EPG_PARSER = OTVParser()
 
 JADEED_NAME = 'Aljadeed'
-JADEED_STREAM_URL = 'https://svs.itworkscdn.net/newtvlive/smil:jadeed.smil/playlist.m3u8'
+JADEED_STREAM_FETCHER = GenericStreamFetcher('jadeed', 'http://player.l1vetv.com/aljadeed/index-1.php')
 JADEED_LOGO = 'http://www.aljadeed.tv/images/logo.png'
 JADEED_EPG_DATA = JadeedEPGData()
 JADEED_EPG_PARSER = JadeedParser()
@@ -39,7 +40,7 @@ FUTURE_STREAM_URL = 'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlis
 FUTURE_LOGO = 'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/goodnews-rtl.png'
 
 NBN_NAME = 'NBN'
-NBN_STREAM_URL = 'https://svs.itworkscdn.net/nbnlive/nbn/playlist.m3u8'
+NBN_STREAM_FETCHER = GenericStreamFetcher('nbn', 'http://player.l1vetv.com/nbn')
 NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-normal-2.png'
 
 MANAR_NAME = 'Al Manar'
@@ -61,7 +62,7 @@ NOURSAT_SHARQ_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour8satlive/livestream'
 NOURSAT_SHARQ_LOGO = 'http://noursat.tv/mediafiles/channels/sharq-logo.png'
 
 CHANNEL_LIST = [
-    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_url=LBC_STREAM_URL, not_available_in=LBC_NOT_AVAILABLE_IN,
+    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
             epg_data=LBC_EPG_DATA,
             epg_parser=LBC_EPG_PARSER),
     Channel(next(counter), MTV_NAME, MTV_LOGO, stream_url=MTV_STREAM_URL, not_available_in=MTV_NOT_AVAILABLE_IN,
@@ -70,10 +71,10 @@ CHANNEL_LIST = [
     Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL,
             epg_data=OTV_EPG_DATA,
             epg_parser=OTV_EPG_PARSER),
-    Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_url=JADEED_STREAM_URL,
+    Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
             epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
-    Channel(next(counter), NBN_NAME, NBN_LOGO, stream_url=NBN_STREAM_URL),
+    Channel(next(counter), NBN_NAME, NBN_LOGO, stream_fetcher=NBN_STREAM_FETCHER),
     Channel(next(counter), FUTURE_NAME, FUTURE_LOGO, stream_url=FUTURE_STREAM_URL),
     Channel(next(counter), MANAR_NAME, MANAR_LOGO, stream_url=MANAR_STREAM_URL),
     Channel(next(counter), NOURSAT_NAME, NOURSAT_LOGO, stream_url=NOURSAT_STREAM_URL,
