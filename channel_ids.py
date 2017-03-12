@@ -17,7 +17,7 @@ LBC_EPG_DATA = LBCEPGData()
 LBC_EPG_PARSER = LBCParser()
 
 MTV_NAME = 'MTV'
-MTV_STREAM_URL = 'https://svs.itworkscdn.net/mtvlebanonlive/smil:mtvlive.smil/playlist.m3u8'
+MTV_STREAM_FETCHER = GenericStreamFetcher('mtv', 'http://mtv.com.lb/Live/Player')
 MTV_LOGO = 'http://mtv.com.lb/Content/images/mtv.jpg'
 MTV_NOT_AVAILABLE_IN = [US]
 MTV_EPG_DATA = MTVEPGData()
@@ -65,7 +65,7 @@ CHANNEL_LIST = [
     Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
             epg_data=LBC_EPG_DATA,
             epg_parser=LBC_EPG_PARSER),
-    Channel(next(counter), MTV_NAME, MTV_LOGO, stream_url=MTV_STREAM_URL, not_available_in=MTV_NOT_AVAILABLE_IN,
+    Channel(next(counter), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
     Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL,
