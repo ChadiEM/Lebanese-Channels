@@ -49,21 +49,6 @@ class MTVEPGData(EPGData):
         return 'Prime Time News'
 
 
-class OTVEPGData(EPGData):
-    @staticmethod
-    def get_fetch_urls() -> List[str]:
-        today = str(datetime.datetime.today().weekday() + 1)
-        tomorrow = str((datetime.datetime.today() + datetime.timedelta(days=1)).weekday() + 1)
-        after_tomorrow = str((datetime.datetime.today() + datetime.timedelta(days=2)).weekday() + 1)
-        return ['http://www.otv.com.lb/beta/_ajax.php?action=grid&id=' + today + '&r=14',
-                'http://www.otv.com.lb/beta/_ajax.php?action=grid&id=' + tomorrow + '&r=14',
-                'http://www.otv.com.lb/beta/_ajax.php?action=grid&id=' + after_tomorrow + '&r=14']
-
-    @staticmethod
-    def get_normalization() -> str:
-        return 'News 19:45'
-
-
 class JadeedEPGData(EPGData):
     @staticmethod
     def get_fetch_urls() -> List[str]:

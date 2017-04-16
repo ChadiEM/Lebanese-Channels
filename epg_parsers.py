@@ -97,38 +97,6 @@ class MTVParser(EPGParser):
         return data
 
 
-class OTVParser(EPGParser):
-    @staticmethod
-    def parse_schedule_page(page_data: str):
-        data = []
-        additional_mappings = dict()
-
-        date = datetime.datetime.strptime(page_data.split('|@|')[1], '%a, %d %b %Y')
-
-        parsed_html = bs4.BeautifulSoup(page_data, 'lxml')
-        listings = parsed_html.find_all('li')
-
-        for listing in listings:
-            title = listing.find('div', attrs={'class': 'b2'}).find('h3').text
-            time_string = listing.find('div', attrs={'class': 'b3'}).find('span').text.split()[0]
-            time_string_split = time_string.split(':')
-            hr = int(time_string_split[0])
-            min = int(time_string_split[1])
-
-            start_time = datetime.datetime(date.year, date.month, date.day, hr, min)
-
-            program_data = ProgramData(title, start_time)
-
-            program_url = listing.find('div', attrs={'class': 'b1'}).a['href']
-            additional_mappings[program_data] = program_url
-
-            data.append(program_data)
-
-        epg_utils.fill_end_times(data)
-
-        return data
-
-
 class JadeedParser(EPGParser):
     @staticmethod
     def parse_schedule_page(page_data: str):

@@ -1,8 +1,8 @@
 import itertools
 
 from channel import Channel
-from epg_data import LBCEPGData, MTVEPGData, OTVEPGData, JadeedEPGData, NoursatEPGData
-from epg_parsers import LBCParser, MTVParser, OTVParser, JadeedParser, NoursatParser
+from epg_data import LBCEPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
+from epg_parsers import LBCParser, MTVParser, JadeedParser, NoursatParser
 from stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
 
 EU = 'eu'
@@ -26,8 +26,6 @@ MTV_EPG_PARSER = MTVParser()
 OTV_NAME = 'OTV'
 OTV_STREAM_URL = 'https://svs.itworkscdn.net/otvlebanonlive/otv.smil/playlist.m3u8'
 OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
-OTV_EPG_DATA = OTVEPGData()
-OTV_EPG_PARSER = OTVParser()
 
 JADEED_NAME = 'Aljadeed'
 JADEED_STREAM_FETCHER = GenericStreamFetcher('jadeed', 'http://player.l1vetv.com/aljadeed/index-1.php')
@@ -68,9 +66,7 @@ CHANNEL_LIST = [
     Channel(next(counter), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
-    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL,
-            epg_data=OTV_EPG_DATA,
-            epg_parser=OTV_EPG_PARSER),
+    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL),
     Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
             epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
