@@ -24,7 +24,7 @@ MTV_EPG_DATA = MTVEPGData()
 MTV_EPG_PARSER = MTVParser()
 
 OTV_NAME = 'OTV'
-OTV_STREAM_URL = 'https://svs.itworkscdn.net/otvlebanonlive/otv.smil/playlist.m3u8'
+OTV_STREAM_FETCHER = GenericStreamFetcher('otv', 'http://www.otv.com.lb/new-live.php')
 OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
 
 JADEED_NAME = 'Aljadeed'
@@ -66,7 +66,7 @@ CHANNEL_LIST = [
     Channel(next(counter), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
-    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_url=OTV_STREAM_URL),
+    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_fetcher=OTV_STREAM_FETCHER),
     Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
             epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
