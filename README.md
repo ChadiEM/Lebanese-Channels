@@ -1,3 +1,5 @@
+[![Build Status](https://chadimasri.com/jenkins/buildStatus/icon?job=kodi-channels-build-deploy)](https://chadimasri.com/jenkins/job/kodi-channels-build-deploy/)
+
 # Lebanese Channels Playlist & EPG
 
 This Python module is a web server that provides two endpoints:
