@@ -1,10 +1,9 @@
 import concurrent.futures
-from typing import List
+from typing import List, Iterator
 
 import flask
 import flask_caching
 from flask import Response
-from flask import send_file
 
 import epg
 from channel import Channel
@@ -22,10 +21,7 @@ def channel_stream():
     target = url_rule.split('/channel/')[1]
     for current_channel in CHANNEL_LIST:
         if current_channel.stream_fetcher is not None and current_channel.stream_fetcher.get_route_name() == target:
-            try:
-                return __get_stream_lines(current_channel.stream_fetcher)
-            except:
-                return __void()
+            return __get_stream_lines(current_channel.stream_fetcher)
 
 
 for channel in CHANNEL_LIST:
@@ -57,7 +53,7 @@ def epg_route_us():
     return __get_epg_response(US)
 
 
-def __filter_locations(channel_list: List[Channel], location: str) -> List[Channel]:
+def __filter_locations(channel_list: List[Channel], location: str) -> Iterator[Channel]:
     return filter(lambda current_channel: current_channel.available_in(location), channel_list)
 
 
@@ -111,10 +107,6 @@ def __get_channels_response_lines(host: str, result_format: str, location: str) 
 def __get_stream_lines(fetcher) -> Response:
     stream_lines_list = fetcher.fetch_stream_data()
     return Response('\n'.join(stream_lines_list), mimetype='application/vnd.apple.mpegurl')
-
-
-def __void():
-    return send_file("no-signal.mp4", mimetype='video/mp4')
 
 
 def __get_epg_response(location: str) -> Response:
