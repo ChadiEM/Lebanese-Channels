@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 entry_point.py -b :12589 flask_app:app
+python3 lebanese_channels/entry_point.py -b :12589 lebanese_channels.flask_app:app

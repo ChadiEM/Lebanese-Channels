@@ -5,11 +5,11 @@ import urllib.error
 from typing import List
 from xml.sax.saxutils import escape
 
-import epg_utils
-import utils
-from channel import Channel
-from epg_data import PostURL
-from program_data import ProgramData
+from lebanese_channels import epg_utils
+from lebanese_channels import utils
+from lebanese_channels.channel import Channel
+from lebanese_channels.epg_data import PostURL
+from lebanese_channels.program_data import ProgramData
 
 
 def get_channel(channel_id, channel_name):

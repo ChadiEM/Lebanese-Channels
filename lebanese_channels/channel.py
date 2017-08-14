@@ -1,8 +1,8 @@
 from typing import List
 
-from epg_data import EPGData
-from epg_parsers import EPGParser
-from stream_fetcher import StreamFetcher
+from lebanese_channels.epg_data import EPGData
+from lebanese_channels.epg_parsers import EPGParser
+from lebanese_channels.stream_fetcher import StreamFetcher
 
 
 class Channel(object):

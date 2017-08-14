@@ -2,24 +2,24 @@ import abc
 import xml.etree.ElementTree
 from typing import List
 
-import utils
+from lebanese_channels import utils
 
 
 class StreamFetcher(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_route_name(self) -> str:
-        return
+        return ''
 
     @abc.abstractmethod
     def fetch_stream_data(self) -> List[str]:
-        return
+        return []
 
 
 class LBCStreamFetcher(StreamFetcher):
     def get_route_name(self) -> str:
         return 'lbc'
 
-    def fetch_stream_data(self) -> str:
+    def fetch_stream_data(self) -> List[str]:
         html = utils.get_html_response_for('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
 
         root = xml.etree.ElementTree.fromstring(html)
@@ -37,7 +37,7 @@ class GenericStreamFetcher(StreamFetcher):
     def get_route_name(self) -> str:
         return self.route_name
 
-    def fetch_stream_data(self) -> str:
+    def fetch_stream_data(self) -> List[str]:
         html = utils.get_html_response_for(self.url)
 
         playlist = ''

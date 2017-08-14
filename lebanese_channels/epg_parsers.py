@@ -6,9 +6,9 @@ from typing import Dict
 
 import bs4
 
-import epg_utils
-import utils
-from program_data import ProgramData
+from lebanese_channels import epg_utils
+from lebanese_channels import utils
+from lebanese_channels.program_data import ProgramData
 
 
 class EPGParser(metaclass=abc.ABCMeta):
@@ -39,14 +39,14 @@ class LBCParser(EPGParser):
             title = listing.find('h2').find('a').text.strip()
             time_string = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text
             hr = int(time_string.split(':')[0])
-            min = int(time_string.split(':')[1])
+            minute = int(time_string.split(':')[1])
 
             duration_string = listing.find('h6', attrs={'class': 'AktivGrotesk_W_Rg'}).text
             duration = int(re.findall(r'\d+', duration_string)[0])
 
             description = listing.find('h5', attrs={'class': 'AktivGrotesk_W_Rg'}).text
 
-            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+            start_time = datetime.datetime.now().replace(hour=hr, minute=minute, second=0, microsecond=0)
             if next_day_show:
                 start_time = start_time + datetime.timedelta(days=1)
             end_time = start_time + datetime.timedelta(minutes=duration)
@@ -86,9 +86,9 @@ class MTVParser(EPGParser):
 
             time_string = program['time']
             hr = int(time_string.split(':')[0])
-            min = int(time_string.split(':')[1])
+            minute = int(time_string.split(':')[1])
 
-            start_time = datetime.datetime(year, month, day, hr, min)
+            start_time = datetime.datetime(year, month, day, hr, minute)
 
             data.append(ProgramData(name, start_time, desc=description, category=category, icon=icon))
 
@@ -111,13 +111,13 @@ class JadeedParser(EPGParser):
             time_string = re.sub('<.*?>', '', row.find('div', attrs={'class': 'listingDate'}).text.strip())
             time_string_split = time_string.split(':')
             hr = int(time_string_split[0])
-            min = int(time_string_split[1])
+            minute = int(time_string_split[1])
 
             links_div = row.find('div', attrs={'class': 'listingLink'})
             page_url_anchor = links_div.find_all('a')[1]
             program_id = page_url_anchor['href'].split('=')[1]
 
-            start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+            start_time = datetime.datetime.now().replace(hour=hr, minute=minute, second=0, microsecond=0)
             program_data = ProgramData(title, start_time)
             data.append(program_data)
 
@@ -167,9 +167,9 @@ class NoursatParser(EPGParser):
                 time_string = program.find('div', attrs={'class': 'time'}).text.split()[0]
                 time_string_split = time_string.split(':')
                 hr = int(time_string_split[0])
-                min = int(time_string_split[1])
+                minute = int(time_string_split[1])
 
-                start_time = datetime.datetime.now().replace(hour=hr, minute=min, second=0, microsecond=0)
+                start_time = datetime.datetime.now().replace(hour=hr, minute=minute, second=0, microsecond=0)
                 start_time = start_time + shift
 
                 program_data = ProgramData(title, start_time)

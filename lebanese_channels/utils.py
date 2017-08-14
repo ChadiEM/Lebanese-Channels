@@ -2,7 +2,7 @@ import urllib
 import urllib.parse
 import urllib.request
 
-from epg_data import PostURL
+from lebanese_channels.epg_data import PostURL
 
 
 def get_html_response_for(url: str) -> str:

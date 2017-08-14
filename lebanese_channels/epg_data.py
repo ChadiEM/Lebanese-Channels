@@ -21,7 +21,7 @@ class EPGData(metaclass=abc.ABCMeta):
     @staticmethod
     @abc.abstractmethod
     def get_normalization() -> str:
-        return
+        return ''
 
 
 class LBCEPGData(EPGData):

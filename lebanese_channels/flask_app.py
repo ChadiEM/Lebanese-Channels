@@ -5,10 +5,10 @@ import flask
 import flask_caching
 from flask import Response
 
-import epg
-from channel import Channel
-from channel_ids import CHANNEL_LIST, EU, US
-from display_item import DisplayItem
+from lebanese_channels import epg
+from lebanese_channels.channel import Channel
+from lebanese_channels.channel_ids import CHANNEL_LIST, EU, US
+from lebanese_channels.display_item import DisplayItem
 
 root = flask.Flask(__name__)
 cache = flask_caching.Cache(root, config={'CACHE_TYPE': 'simple'})

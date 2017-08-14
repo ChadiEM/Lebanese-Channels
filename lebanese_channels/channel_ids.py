@@ -1,9 +1,9 @@
 import itertools
 
-from channel import Channel
-from epg_data import LBCEPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
-from epg_parsers import LBCParser, MTVParser, JadeedParser, NoursatParser
-from stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
+from lebanese_channels.channel import Channel
+from lebanese_channels.epg_data import LBCEPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
+from lebanese_channels.epg_parsers import LBCParser, MTVParser, JadeedParser, NoursatParser
+from lebanese_channels.stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
 
 EU = 'eu'
 US = 'us'
