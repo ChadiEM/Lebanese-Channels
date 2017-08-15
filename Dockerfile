@@ -1,13 +1,13 @@
 FROM python:3.6
-RUN mkdir -p /usr/src/app
+RUN mkdir -p /opt/lc
 
-WORKDIR /usr/src/app
+WORKDIR /opt/lc
 
-COPY requirements.txt /usr/src/app
+COPY requirements.txt /opt/lc
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . /usr/src/app
+COPY . /opt/lc
 
 EXPOSE 12589
 
-ENTRYPOINT ["/usr/src/app/start.sh"]
+ENTRYPOINT ["/opt/lc/start.sh"]
