@@ -59,6 +59,10 @@ NOURSAT_SHARQ_NAME = 'Nour Sharq'
 NOURSAT_SHARQ_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour8satlive/livestream'
 NOURSAT_SHARQ_LOGO = 'http://noursat.tv/mediafiles/channels/sharq-logo.png'
 
+LBC_SPORTS_NAME = 'LBC Sports'
+LBC_SPORTS_STREAM_FETCHER = GenericStreamFetcher('lbc_sports', 'https://www.lbcgroup.tv/sports')
+LBC_SPORTS_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
+
 CHANNEL_LIST = [
     Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
             epg_data=LBC_EPG_DATA,
@@ -78,4 +82,5 @@ CHANNEL_LIST = [
             epg_parser=NOURSAT_EPG_PARSER),
     Channel(next(counter), NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_LOGO, stream_url=NOURSAT_KODDASS_STREAM_URL),
     Channel(next(counter), NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_LOGO, stream_url=NOURSAT_SHARQ_STREAM_URL),
+    Channel(next(counter), LBC_SPORTS_NAME, LBC_SPORTS_LOGO, stream_fetcher=LBC_SPORTS_STREAM_FETCHER)
 ]
