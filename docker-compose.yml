@@ -1,7 +1,0 @@
-version: '2'
-
-services:
-  lebanese_channels:
-    build: .
-    ports:
-      - '12589:12589'

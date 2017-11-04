@@ -1,22 +1,12 @@
-[![Build Status](https://chadimasri.com/jenkins/buildStatus/icon?job=kodi-channels-build-deploy)](https://chadimasri.com/jenkins/job/kodi-channels-build-deploy/)
-
 # Lebanese Channels Playlist & EPG
 
 This Python module is a web server that provides two endpoints:
 - A `/channels` endpoint for a playlist of some of the most common Lebanese channels, in m3u8 format.
 - An `/epg` endpoint for EPG fetched from their corresponding websites, in XMLTV format.
 
-## Requirements
-- Python 3 & Modules:
-  - flask
-  - flask_caching
-  - gunicorn
-  - BeautifulSoup4
-  - lxml
-  - pytz
-
 ## Run
 `./start.sh` to start the server.
+Or, if using docker, `docker run -d -p 12589:12589 chadiem/lebanese-channels`
 
 ## Configure
 - Kodi:
