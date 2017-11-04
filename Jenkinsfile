@@ -17,7 +17,7 @@ pipeline {
             }
             steps {
                 sh 'rsync -Crv ./ /opt/channels/ --delete'
-                sh 'sudo /bin/systemctl restart channels'
+                sh 'sudo /bin/systemctl restart channels.service'
             }
         }
     }
