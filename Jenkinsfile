@@ -1,17 +1,15 @@
 pipeline {
-    agent none
+    agent any
     triggers {
         githubPush()
     }
     stages {
         stage('Checkout') {
-            agent any
             steps {
                 checkout scm
             }
         }
         stage('Deploy Locally') {
-            agent any
             when {
                 branch 'master'
             }
