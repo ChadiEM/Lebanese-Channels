@@ -10,12 +10,12 @@ from lebanese_channels.channel import Channel
 from lebanese_channels.channel_ids import CHANNEL_LIST, EU, US
 from lebanese_channels.display_item import DisplayItem
 
-root = flask.Flask(__name__)
-cache = flask_caching.Cache(root, config={'CACHE_TYPE': 'simple'})
-app = root.wsgi_app
+FLASK_ROOT = flask.Flask(__name__)
+CACHE = flask_caching.Cache(FLASK_ROOT, config={'CACHE_TYPE': 'simple'})
+APP = FLASK_ROOT.wsgi_app
 
 
-@cache.cached(timeout=60)
+@CACHE.cached(timeout=60)
 def channel_stream():
     url_rule = flask.request.url_rule.rule
     target = url_rule.split('/channel/')[1]
@@ -26,29 +26,29 @@ def channel_stream():
 
 for channel in CHANNEL_LIST:
     if channel.stream_fetcher is not None:
-        root.add_url_rule('/channel/' + channel.stream_fetcher.get_route_name(), view_func=channel_stream)
+        FLASK_ROOT.add_url_rule('/channel/' + channel.stream_fetcher.get_route_name(), view_func=channel_stream)
 
 
-@root.route('/channels')
-@root.route('/channels/eu')
+@FLASK_ROOT.route('/channels')
+@FLASK_ROOT.route('/channels/eu')
 def channels_route_default():
     return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), EU)
 
 
-@root.route('/channels/us')
+@FLASK_ROOT.route('/channels/us')
 def channels_route_us():
     return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), US)
 
 
-@root.route('/epg')
-@root.route('/epg/eu')
-@cache.cached(timeout=3600)
+@FLASK_ROOT.route('/epg')
+@FLASK_ROOT.route('/epg/eu')
+@CACHE.cached(timeout=3600)
 def epg_route_default():
     return __get_epg_response(EU)
 
 
-@root.route('/epg/us')
-@cache.cached(timeout=3600)
+@FLASK_ROOT.route('/epg/us')
+@CACHE.cached(timeout=3600)
 def epg_route_us():
     return __get_epg_response(US)
 

@@ -21,8 +21,8 @@ def normalize_times(program_data_list: List[ProgramData], match: str):
     shift = 0
     for program_data in program_data_list:
         if match in program_data.name:
-            hr = program_data.start_time.hour
-            shift = 18 - hr
+            hour = program_data.start_time.hour
+            shift = 18 - hour
             break
 
     for program_data in program_data_list:

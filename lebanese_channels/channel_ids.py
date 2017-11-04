@@ -7,7 +7,7 @@ from lebanese_channels.stream_fetcher import LBCStreamFetcher, GenericStreamFetc
 
 EU = 'eu'
 US = 'us'
-counter = itertools.count(start=1)
+COUNTER = itertools.count(start=1)
 
 LBC_NAME = 'LBC Europe'
 LBC_STREAM_FETCHER = LBCStreamFetcher()
@@ -64,23 +64,23 @@ LBC_SPORTS_STREAM_FETCHER = GenericStreamFetcher('lbc_sports', 'https://www.lbcg
 LBC_SPORTS_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
 
 CHANNEL_LIST = [
-    Channel(next(counter), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
+    Channel(next(COUNTER), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
             epg_data=LBC_EPG_DATA,
             epg_parser=LBC_EPG_PARSER),
-    Channel(next(counter), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
+    Channel(next(COUNTER), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),
-    Channel(next(counter), OTV_NAME, OTV_LOGO, stream_fetcher=OTV_STREAM_FETCHER),
-    Channel(next(counter), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
+    Channel(next(COUNTER), OTV_NAME, OTV_LOGO, stream_fetcher=OTV_STREAM_FETCHER),
+    Channel(next(COUNTER), JADEED_NAME, JADEED_LOGO, stream_fetcher=JADEED_STREAM_FETCHER,
             epg_data=JADEED_EPG_DATA,
             epg_parser=JADEED_EPG_PARSER),
-    Channel(next(counter), NBN_NAME, NBN_LOGO, stream_fetcher=NBN_STREAM_FETCHER),
-    Channel(next(counter), FUTURE_NAME, FUTURE_LOGO, stream_url=FUTURE_STREAM_URL),
-    Channel(next(counter), MANAR_NAME, MANAR_LOGO, stream_url=MANAR_STREAM_URL),
-    Channel(next(counter), NOURSAT_NAME, NOURSAT_LOGO, stream_url=NOURSAT_STREAM_URL,
+    Channel(next(COUNTER), NBN_NAME, NBN_LOGO, stream_fetcher=NBN_STREAM_FETCHER),
+    Channel(next(COUNTER), FUTURE_NAME, FUTURE_LOGO, stream_url=FUTURE_STREAM_URL),
+    Channel(next(COUNTER), MANAR_NAME, MANAR_LOGO, stream_url=MANAR_STREAM_URL),
+    Channel(next(COUNTER), NOURSAT_NAME, NOURSAT_LOGO, stream_url=NOURSAT_STREAM_URL,
             epg_data=NOURSAT_EPG_DATA,
             epg_parser=NOURSAT_EPG_PARSER),
-    Channel(next(counter), NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_LOGO, stream_url=NOURSAT_KODDASS_STREAM_URL),
-    Channel(next(counter), NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_LOGO, stream_url=NOURSAT_SHARQ_STREAM_URL),
-    Channel(next(counter), LBC_SPORTS_NAME, LBC_SPORTS_LOGO, stream_fetcher=LBC_SPORTS_STREAM_FETCHER)
+    Channel(next(COUNTER), NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_LOGO, stream_url=NOURSAT_KODDASS_STREAM_URL),
+    Channel(next(COUNTER), NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_LOGO, stream_url=NOURSAT_SHARQ_STREAM_URL),
+    Channel(next(COUNTER), LBC_SPORTS_NAME, LBC_SPORTS_LOGO, stream_fetcher=LBC_SPORTS_STREAM_FETCHER)
 ]
