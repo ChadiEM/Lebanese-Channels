@@ -39,7 +39,7 @@ MTV_EPG_PARSER = MTVParser()
 
 OTV_NAME = 'OTV'
 OTV_STREAM_FETCHER = GenericStreamFetcher('otv', 'http://www.otv.com.lb/new-live.php')
-OTV_LOGO = 'http://www.otv.com.lb/beta/images/logo.png'
+OTV_LOGO = 'https://lh3.googleusercontent.com/7faSyx5uV7BjRXzn6hcbTPs8sfY0WlreUI7XZZei-u7VJTNpU7LVnTA7c7euazfbcso=w300'
 
 JADEED_NAME = 'Aljadeed'
 JADEED_STREAM_FETCHER = GenericStreamFetcher('jadeed', 'http://player.l1vetv.com/aljadeed/index-1.php')
@@ -53,7 +53,7 @@ FUTURE_LOGO = 'http://www.futuretvnetwork.com/demo/wp-content/uploads/2014/05/go
 
 NBN_NAME = 'NBN'
 NBN_STREAM_FETCHER = GenericStreamFetcher('nbn', 'http://player.l1vetv.com/nbn')
-NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-normal-2.png'
+NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2017/02/nbnlogoforsite3.png'
 
 MANAR_NAME = 'Al Manar'
 MANAR_STREAM_URL = 'http://live2.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
