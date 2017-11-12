@@ -1,9 +1,17 @@
 import itertools
 
 from lebanese_channels.channel import Channel
-from lebanese_channels.epg_data import LBCEPGData, LB2EPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
-from lebanese_channels.epg_parsers import LBCParser, MTVParser, JadeedParser, NoursatParser
-from lebanese_channels.stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
+from lebanese_channels.epg.data.jadeed_data import JadeedEPGData
+from lebanese_channels.epg.data.lb2_data import LB2EPGData
+from lebanese_channels.epg.data.lbc_data import LBCEPGData
+from lebanese_channels.epg.data.mtv_data import MTVEPGData
+from lebanese_channels.epg.data.noursat_data import NoursatEPGData
+from lebanese_channels.epg.parsers.jadeed_parser import JadeedParser
+from lebanese_channels.epg.parsers.lbc_parser import LBCParser
+from lebanese_channels.epg.parsers.mtv_parser import MTVParser
+from lebanese_channels.epg.parsers.noursat_parser import NoursatParser
+from lebanese_channels.stream.fetchers.generic_fetcher import GenericStreamFetcher
+from lebanese_channels.stream.fetchers.lbc_fetcher import LBCStreamFetcher
 
 EU = 'eu'
 US = 'us'
@@ -52,18 +60,10 @@ MANAR_STREAM_URL = 'http://live2.mediaforall.net:1935/liveorigin/livestream_480p
 MANAR_LOGO = 'http://english.almanar.com.lb/framework/assets/images/logo-tech.png'
 
 NOURSAT_NAME = 'Noursat'
-NOURSAT_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour4satlive/livestream'
+NOURSAT_STREAM_URL = 'https://svs.itworkscdn.net/nour4satlive/livestream/playlist.m3u8'
 NOURSAT_LOGO = 'http://noursat.tv/images/main-logo.png'
 NOURSAT_EPG_DATA = NoursatEPGData()
 NOURSAT_EPG_PARSER = NoursatParser()
-
-NOURSAT_KODDASS_NAME = 'Nour Al Koddass'
-NOURSAT_KODDASS_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour1satlive/livestream'
-NOURSAT_KODDASS_LOGO = 'http://noursat.tv/mediafiles/channels/koddass-logo.png'
-
-NOURSAT_SHARQ_NAME = 'Nour Sharq'
-NOURSAT_SHARQ_STREAM_URL = 'rtsp://svs.itworkscdn.net/nour8satlive/livestream'
-NOURSAT_SHARQ_LOGO = 'http://noursat.tv/mediafiles/channels/sharq-logo.png'
 
 LBC_SPORTS_NAME = 'LBC Sports'
 LBC_SPORTS_STREAM_FETCHER = GenericStreamFetcher('lbc_sports', 'https://www.lbcgroup.tv/sports')
@@ -89,7 +89,5 @@ CHANNEL_LIST = [
     Channel(next(COUNTER), NOURSAT_NAME, NOURSAT_LOGO, stream_url=NOURSAT_STREAM_URL,
             epg_data=NOURSAT_EPG_DATA,
             epg_parser=NOURSAT_EPG_PARSER),
-    Channel(next(COUNTER), NOURSAT_KODDASS_NAME, NOURSAT_KODDASS_LOGO, stream_url=NOURSAT_KODDASS_STREAM_URL),
-    Channel(next(COUNTER), NOURSAT_SHARQ_NAME, NOURSAT_SHARQ_LOGO, stream_url=NOURSAT_SHARQ_STREAM_URL),
     Channel(next(COUNTER), LBC_SPORTS_NAME, LBC_SPORTS_LOGO, stream_fetcher=LBC_SPORTS_STREAM_FETCHER)
 ]

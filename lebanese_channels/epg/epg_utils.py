@@ -1,7 +1,7 @@
 import datetime
 from typing import List
 
-from lebanese_channels.program_data import ProgramData
+from lebanese_channels.epg.program_data import ProgramData
 
 
 def fill_end_times(program_data_list: List[ProgramData]):

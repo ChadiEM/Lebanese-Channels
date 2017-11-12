@@ -1,0 +1,21 @@
+import datetime
+from typing import List
+
+from lebanese_channels.epg.epg_data import EPGData
+from lebanese_channels.epg.epg_url import EPGURL
+
+
+class LB2EPGData(EPGData):
+    @staticmethod
+    def get_fetch_urls() -> List[EPGURL]:
+        today = datetime.datetime.now().strftime('%Y/%m/%d')
+        tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y/%m/%d')
+        after_tomorrow = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime('%Y/%m/%d')
+
+        return [EPGURL('https://www.lbcgroup.tv/schedule-channels-date/9/' + today + '/ar'),
+                EPGURL('https://www.lbcgroup.tv/schedule-channels-date/9/' + tomorrow + '/ar'),
+                EPGURL('https://www.lbcgroup.tv/schedule-channels-date/9/' + after_tomorrow + '/ar')]
+
+    @staticmethod
+    def get_normalization() -> str:
+        return None

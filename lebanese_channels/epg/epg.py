@@ -5,11 +5,11 @@ import urllib.error
 from typing import List
 from xml.sax.saxutils import escape
 
-from lebanese_channels import epg_utils
 from lebanese_channels import utils
 from lebanese_channels.channel import Channel
-from lebanese_channels.epg_data import PostURL
-from lebanese_channels.program_data import ProgramData
+from lebanese_channels.epg import epg_utils
+from lebanese_channels.epg.epg_url import EPGURL
+from lebanese_channels.epg.program_data import ProgramData
 
 
 def get_channel(channel_id, channel_name):
@@ -20,34 +20,20 @@ def get_epg(channel: Channel):
     if channel.epg_data is None or channel.epg_parser is None:
         return ''
 
-    urls = channel.epg_data.get_fetch_urls()
+    epg_urls = channel.epg_data.get_fetch_urls()
 
     response = ''
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-        futures = {executor.submit(__fetch_epg, channel, url): url for url in urls}
+        futures = {executor.submit(__fetch_epg, channel, epg_url): epg_url for epg_url in epg_urls}
         for future in concurrent.futures.as_completed(futures):
             response += future.result()
-
-    post_url = channel.epg_data.get_post_url()
-    if post_url is not None:
-        response += __fetch_post_epg(channel, post_url)
 
     return response
 
 
-def __fetch_epg(channel: Channel, url: str):
+def __fetch_epg(channel: Channel, epg_url: EPGURL):
     try:
-        html = utils.get_html_response_for(url)
-        start_end_data = channel.epg_parser.parse_schedule_page(html)
-        epg_utils.normalize_times(start_end_data, channel.epg_data.get_normalization())
-        return get_response(start_end_data, channel.channel_id)
-    except urllib.error.URLError:
-        return ''
-
-
-def __fetch_post_epg(channel: Channel, post_data: PostURL):
-    try:
-        html = utils.get_post_html_response_for(post_data)
+        html = utils.get_response(epg_url.url, epg_url.data)
         start_end_data = channel.epg_parser.parse_schedule_page(html)
         epg_utils.normalize_times(start_end_data, channel.epg_data.get_normalization())
         return get_response(start_end_data, channel.channel_id)
