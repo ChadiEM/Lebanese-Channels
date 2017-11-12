@@ -1,7 +1,7 @@
 import itertools
 
 from lebanese_channels.channel import Channel
-from lebanese_channels.epg_data import LBCEPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
+from lebanese_channels.epg_data import LBCEPGData, LB2EPGData, MTVEPGData, JadeedEPGData, NoursatEPGData
 from lebanese_channels.epg_parsers import LBCParser, MTVParser, JadeedParser, NoursatParser
 from lebanese_channels.stream_fetcher import LBCStreamFetcher, GenericStreamFetcher
 
@@ -15,6 +15,12 @@ LBC_LOGO = 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
 LBC_NOT_AVAILABLE_IN = [US]
 LBC_EPG_DATA = LBCEPGData()
 LBC_EPG_PARSER = LBCParser()
+
+LB2_NAME = 'LB2'
+LB2_STREAM_URL = 'https://svs.itworkscdn.net/lbcdramalive/drama/playlist.m3u8'
+LB2_LOGO = 'https://pbs.twimg.com/profile_images/776806340790476800/CMdKBI7R_400x400.jpg'
+LB2_EPG_DATA = LB2EPGData()
+LB2_EPG_PARSER = LBCParser()
 
 MTV_NAME = 'MTV'
 MTV_STREAM_FETCHER = GenericStreamFetcher('mtv', 'http://mtv.com.lb/Live/Player')
@@ -42,7 +48,7 @@ NBN_STREAM_FETCHER = GenericStreamFetcher('nbn', 'http://player.l1vetv.com/nbn')
 NBN_LOGO = 'http://www.nbn.com.lb/wp-content/uploads/2016/09/nbn-logo-normal-2.png'
 
 MANAR_NAME = 'Al Manar'
-MANAR_STREAM_URL = 'http://edge.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
+MANAR_STREAM_URL = 'http://live2.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
 MANAR_LOGO = 'http://english.almanar.com.lb/framework/assets/images/logo-tech.png'
 
 NOURSAT_NAME = 'Noursat'
@@ -67,6 +73,9 @@ CHANNEL_LIST = [
     Channel(next(COUNTER), LBC_NAME, LBC_LOGO, stream_fetcher=LBC_STREAM_FETCHER, not_available_in=LBC_NOT_AVAILABLE_IN,
             epg_data=LBC_EPG_DATA,
             epg_parser=LBC_EPG_PARSER),
+    Channel(next(COUNTER), LB2_NAME, LB2_LOGO, stream_url=LB2_STREAM_URL,
+            epg_data=LB2_EPG_DATA,
+            epg_parser=LB2_EPG_PARSER),
     Channel(next(COUNTER), MTV_NAME, MTV_LOGO, stream_fetcher=MTV_STREAM_FETCHER, not_available_in=MTV_NOT_AVAILABLE_IN,
             epg_data=MTV_EPG_DATA,
             epg_parser=MTV_EPG_PARSER),

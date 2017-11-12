@@ -27,11 +27,33 @@ class EPGData(metaclass=abc.ABCMeta):
 class LBCEPGData(EPGData):
     @staticmethod
     def get_fetch_urls() -> List[str]:
-        return ['http://www.lbcgroup.tv/schedule-channels/5/lbc-europe-cet-time-paris/ar']
+        today = datetime.datetime.now().strftime('%Y/%m/%d')
+        tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y/%m/%d')
+        after_tomorrow = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime('%Y/%m/%d')
+
+        return ['https://www.lbcgroup.tv/schedule-channels-date/5/' + today + '/ar',
+                'https://www.lbcgroup.tv/schedule-channels-date/5/' + tomorrow + '/ar',
+                'https://www.lbcgroup.tv/schedule-channels-date/5/' + after_tomorrow + '/ar']
 
     @staticmethod
     def get_normalization() -> str:
         return 'نشرة الأخبار المسائية'
+
+
+class LB2EPGData(EPGData):
+    @staticmethod
+    def get_fetch_urls() -> List[str]:
+        today = datetime.datetime.now().strftime('%Y/%m/%d')
+        tomorrow = (datetime.datetime.now() + datetime.timedelta(days=1)).strftime('%Y/%m/%d')
+        after_tomorrow = (datetime.datetime.now() + datetime.timedelta(days=2)).strftime('%Y/%m/%d')
+
+        return ['https://www.lbcgroup.tv/schedule-channels-date/9/' + today + '/ar',
+                'https://www.lbcgroup.tv/schedule-channels-date/9/' + tomorrow + '/ar',
+                'https://www.lbcgroup.tv/schedule-channels-date/9/' + after_tomorrow + '/ar']
+
+    @staticmethod
+    def get_normalization() -> str:
+        return None
 
 
 class MTVEPGData(EPGData):

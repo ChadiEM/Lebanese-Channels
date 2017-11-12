@@ -20,7 +20,7 @@ def fill_end_times(program_data_list: List[ProgramData]):
 def normalize_times(program_data_list: List[ProgramData], match: str):
     shift = 0
     for program_data in program_data_list:
-        if match in program_data.name:
+        if match is not None and match in program_data.name:
             hour = program_data.start_time.hour
             shift = 18 - hour
             break
