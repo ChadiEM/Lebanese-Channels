@@ -1,5 +1,7 @@
+from urllib.error import HTTPError
+
 from lebanese_channels import utils
-from lebanese_channels.stream.stream_fetcher import StreamFetcher
+from lebanese_channels.stream.stream_fetcher import StreamFetcher, StreamError
 
 
 class GenericStreamFetcher(StreamFetcher):
@@ -11,10 +13,12 @@ class GenericStreamFetcher(StreamFetcher):
         return self.route_name
 
     def fetch_stream_url(self) -> str:
-        html = utils.get_response(self.url)
+        try:
+            html = utils.get_response(self.url)
+            for line in html.splitlines():
+                if 'file' in line and 'm3u8' in line:
+                    return line.split('"')[1]
+        except HTTPError:
+            raise StreamError(self.url)
 
-        for line in html.splitlines():
-            if 'file' in line and 'm3u8' in line:
-                return line.split('"')[1]
-
-        return ''
+        raise StreamError(self.url)
