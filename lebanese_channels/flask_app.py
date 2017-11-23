@@ -32,12 +32,12 @@ for channel in CHANNEL_LIST:
 @app.route('/channels')
 @app.route('/channels/eu')
 def channels_route_default():
-    return __get_channels_response_lines(flask.request.base_url, flask.request.args.get('format'), EU)
+    return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), EU)
 
 
 @app.route('/channels/us')
 def channels_route_us():
-    return __get_channels_response_lines(flask.request.base_url, flask.request.args.get('format'), US)
+    return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), US)
 
 
 @app.route('/epg')
@@ -62,8 +62,7 @@ def __get_channels_response_lines(host: str, result_format: str, location: str) 
     filtered_channels = __filter_locations(CHANNEL_LIST, location)
     for current_channel in filtered_channels:
         if current_channel.stream_fetcher is not None:
-            base_path = host[0:host.rfind('/') + 1]
-            url = base_path + 'channel/' + current_channel.stream_fetcher.get_route_name()
+            url = host + 'channel/' + current_channel.stream_fetcher.get_route_name()
         else:
             url = current_channel.url
 
