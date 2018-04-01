@@ -1,56 +1,41 @@
+import abc
+import itertools
+import re
 from typing import List
 
-from lebanese_channels.epg.epg_data import EPGData
-from lebanese_channels.epg.epg_parser import EPGParser
-from lebanese_channels.stream.stream_fetcher import StreamFetcher
+from lebanese_channels.epg.program_data import ProgramData
 
 
 class Channel(object):
-    def __init__(self,
-                 channel_id: int,
-                 name: str,
-                 logo: str,
-                 stream_url: str = None,
-                 stream_fetcher: StreamFetcher = None,
-                 not_available_in: List[str] = None,
-                 epg_data: EPGData = None,
-                 epg_parser: EPGParser = None):
-        self._channel_id = channel_id
-        self._name = name
-        self._logo = logo
-        self._url = stream_url
-        self._stream_fetcher = stream_fetcher
-        self._not_available_in = not_available_in
-        self._epg_data = epg_data
-        self._epg_parser = epg_parser
+    id_generator_function = itertools.count(start=1)
+
+    def __init__(self):
+        self._id = next(Channel.id_generator_function)
+
+    @abc.abstractmethod
+    def get_name(self) -> str:
+        pass
+
+    @abc.abstractmethod
+    def get_logo(self) -> str:
+        pass
+
+    @abc.abstractmethod
+    def get_stream_url(self) -> str:
+        pass
+
+    @abc.abstractmethod
+    def get_epg_data(self) -> List[ProgramData]:
+        pass
+
+    def get_route_name(self) -> str:
+        return re.sub(r'\W+', '', self.get_name()).lower()
 
     @property
-    def channel_id(self) -> int:
-        return self._channel_id
+    def id(self) -> int:
+        return self._id
 
-    @property
-    def name(self) -> str:
-        return self._name
 
-    @property
-    def logo(self) -> str:
-        return self._logo
-
-    @property
-    def url(self) -> str:
-        return self._url
-
-    @property
-    def stream_fetcher(self) -> StreamFetcher:
-        return self._stream_fetcher
-
-    @property
-    def epg_data(self) -> EPGData:
-        return self._epg_data
-
-    @property
-    def epg_parser(self) -> EPGParser:
-        return self._epg_parser
-
-    def available_in(self, location: str) -> bool:
-        return (self._not_available_in is None) or (location not in self._not_available_in)
+class StreamError(Exception):
+    def __init__(self, url):
+        self.channel = url

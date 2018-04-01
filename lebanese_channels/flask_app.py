@@ -1,14 +1,13 @@
 import concurrent.futures
-from typing import List, Iterator
 
 import flask
 import flask_caching
 from flask import Response
 
-from lebanese_channels.channel import Channel
-from lebanese_channels.channel_ids import CHANNEL_LIST, EU, US
+from lebanese_channels.channel_ids import CHANNEL_LIST
 from lebanese_channels.display_item import DisplayItem
 from lebanese_channels.epg import epg
+from lebanese_channels.epg.epg import get_epg_channel_declaration
 
 app = flask.Flask(__name__)
 cache = flask_caching.Cache(app, config={'CACHE_TYPE': 'simple'})
@@ -19,54 +18,34 @@ wsgi_app = app.wsgi_app
 def channel_stream():
     url_rule = flask.request.url_rule.rule
     target = url_rule.split('/channel/')[1]
-    for current_channel in CHANNEL_LIST:
-        if current_channel.stream_fetcher is not None and current_channel.stream_fetcher.get_route_name() == target:
-            return __get_stream_lines(current_channel.stream_fetcher)
+
+    for channel in CHANNEL_LIST:
+        if channel.get_route_name() == target:
+            return channel.get_stream_url()
 
 
-for channel in CHANNEL_LIST:
-    if channel.stream_fetcher is not None:
-        app.add_url_rule('/channel/' + channel.stream_fetcher.get_route_name(), view_func=channel_stream)
+for current_channel in CHANNEL_LIST:
+    app.add_url_rule('/channel/' + current_channel.get_route_name(), view_func=channel_stream)
 
 
 @app.route('/channels')
-@app.route('/channels/eu')
 def channels_route_default():
-    return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), EU)
-
-
-@app.route('/channels/us')
-def channels_route_us():
-    return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'), US)
+    return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'))
 
 
 @app.route('/epg')
-@app.route('/epg/eu')
 @cache.cached(timeout=3600)
 def epg_route_default():
-    return __get_epg_response(EU)
+    return __get_epg_response()
 
 
-@app.route('/epg/us')
-@cache.cached(timeout=3600)
-def epg_route_us():
-    return __get_epg_response(US)
-
-
-def __filter_locations(channel_list: List[Channel], location: str) -> Iterator[Channel]:
-    return filter(lambda current_channel: current_channel.available_in(location), channel_list)
-
-
-def __get_channels_response_lines(host: str, result_format: str, location: str) -> Response:
+def __get_channels_response_lines(host: str, result_format: str) -> Response:
     display_items = []
-    filtered_channels = __filter_locations(CHANNEL_LIST, location)
-    for current_channel in filtered_channels:
-        if current_channel.stream_fetcher is not None:
-            url = host + 'channel/' + current_channel.stream_fetcher.get_route_name()
-        else:
-            url = current_channel.url
 
-        display_items.append(DisplayItem(current_channel.channel_id, current_channel.name, url, current_channel.logo))
+    for channel in CHANNEL_LIST:
+        url = host + 'channel/' + channel.get_route_name()
+        display_items.append(
+            DisplayItem(channel.id, channel.get_name(), url, channel.get_logo()))
 
     if result_format is None or result_format == 'm3u8':
         response_list = ['#EXTM3U']
@@ -109,17 +88,18 @@ def __get_stream_lines(fetcher) -> Response:
     return flask.redirect(playlist, code=302)
 
 
-def __get_epg_response(location: str) -> Response:
+def __get_epg_response() -> Response:
     response_string = '<?xml version="1.0" encoding="utf-8" ?>\n'
     response_string += '<!DOCTYPE tv SYSTEM "xmltv.dtd">\n'
     response_string += '<tv>'
 
-    for current_channel in __filter_locations(CHANNEL_LIST, location):
-        response_string += epg.get_channel(current_channel.channel_id, current_channel.name)
+    for channel in CHANNEL_LIST:
+        response_string += get_epg_channel_declaration(channel)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(epg.get_epg, current_channel): current_channel for current_channel in
-                   __filter_locations(CHANNEL_LIST, location)}
+        futures = {executor.submit(epg.get_epg_as_xml, channel): channel for channel in
+                   CHANNEL_LIST}
+
         for future in concurrent.futures.as_completed(futures):
             response_string += future.result()
 

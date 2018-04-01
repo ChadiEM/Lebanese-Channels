@@ -3,11 +3,12 @@ import re
 from typing import Dict
 
 import bs4
+from pytz import timezone
 
-from lebanese_channels import utils
-from lebanese_channels.epg import epg_utils
-from lebanese_channels.epg.epg_parser import EPGParser
 from lebanese_channels.epg.program_data import ProgramData
+from lebanese_channels.services.epg_parsers.epg_parser import EPGParser
+from lebanese_channels.services.utils import epg
+from lebanese_channels.services.utils.web import get_response
 
 
 class JadeedParser(EPGParser):
@@ -30,13 +31,14 @@ class JadeedParser(EPGParser):
             page_url_anchor = links_div.find_all('a')[1]
             program_id = page_url_anchor['href'].split('=')[1]
 
-            start_time = datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+            start_time = timezone('Asia/Beirut').localize(
+                datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0))
             program_data = ProgramData(title, start_time)
             data.append(program_data)
 
             additional_mappings[program_data] = 'http://aljadeed.tv/arabic/about-program?programid=' + program_id
 
-        epg_utils.fill_end_times(data)
+        epg.fill_end_times(data)
         fill_jadeed_additional_mappings(additional_mappings)
 
         return data
@@ -44,7 +46,7 @@ class JadeedParser(EPGParser):
 
 def fill_jadeed_additional_mappings(additional_mappings: Dict[ProgramData, str]):
     for program_data, url in additional_mappings.items():
-        html = utils.get_response(url)
+        html = get_response(url)
         parsed_html = bs4.BeautifulSoup(html, 'lxml')
 
         image_div = parsed_html.find('div', attrs={'class': 'mainArtistImage'})

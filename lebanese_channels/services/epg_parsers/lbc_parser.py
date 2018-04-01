@@ -2,9 +2,10 @@ import datetime
 import re
 
 import bs4
+from pytz import timezone
 
-from lebanese_channels.epg.epg_parser import EPGParser
 from lebanese_channels.epg.program_data import ProgramData
+from lebanese_channels.services.epg_parsers.epg_parser import EPGParser
 
 
 class LBCParser(EPGParser):
@@ -23,7 +24,8 @@ class LBCParser(EPGParser):
         listings = parsed_html.find_all('table', attrs={'class': 'ScheduleMoreThan452'})
 
         for listing in listings:
-            title = listing.find('h2').find('a').text.strip()
+            h2 = listing.find('h2')
+            title = h2.find('a').text.strip() if h2.find('a') is not None else h2.text.strip()
             time_string = listing.find('span', attrs={'class': 'FromTimeSchedule'}).text
             hour = int(time_string.split(':')[0])
             minute = int(time_string.split(':')[1])
@@ -33,7 +35,7 @@ class LBCParser(EPGParser):
 
             description = listing.find('h5', attrs={'class': 'AktivGrotesk_W_Rg'}).text
 
-            start_time = datetime.datetime(year, month, day, hour, minute)
+            start_time = timezone('Europe/Paris').localize(datetime.datetime(year, month, day, hour, minute))
             end_time = start_time + datetime.timedelta(minutes=duration)
 
             data.append(ProgramData(title, start_time, end_time, desc=description))

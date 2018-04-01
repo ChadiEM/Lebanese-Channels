@@ -2,10 +2,11 @@ import datetime
 import json
 
 import bs4
+from pytz import timezone
 
-from lebanese_channels.epg import epg_utils
-from lebanese_channels.epg.epg_parser import EPGParser
 from lebanese_channels.epg.program_data import ProgramData
+from lebanese_channels.services.epg_parsers.epg_parser import EPGParser
+from lebanese_channels.services.utils import epg
 
 
 class NoursatParser(EPGParser):
@@ -35,12 +36,13 @@ class NoursatParser(EPGParser):
                 hour = int(time_string_split[0])
                 minute = int(time_string_split[1])
 
-                start_time = datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0)
+                start_time = timezone('Asia/Beirut').localize(
+                    datetime.datetime.now().replace(hour=hour, minute=minute, second=0, microsecond=0))
                 start_time = start_time + shift
 
                 program_data = ProgramData(title, start_time)
                 data.append(program_data)
 
-        epg_utils.fill_end_times(data)
+        epg.fill_end_times(data)
 
         return data

@@ -1,9 +1,10 @@
 import unittest
 import urllib
+import urllib.request
 from urllib.error import HTTPError
 
+from lebanese_channels.channel import StreamError
 from lebanese_channels.channel_ids import CHANNEL_LIST
-from lebanese_channels.stream.stream_fetcher import StreamError
 
 
 class ValidationTest(unittest.TestCase):
@@ -16,26 +17,19 @@ class ValidationTest(unittest.TestCase):
 
     def test_logos(self):
         for channel in CHANNEL_LIST:
-            print('Checking ' + channel.name + '...')
-            self.check_status(channel.logo)
+            print('Checking ' + channel.get_name() + '...')
+            self.check_status(channel.get_logo())
 
-    def test_direct_streams(self):
+    def test_streams(self):
         for channel in CHANNEL_LIST:
-            if channel.url is not None:
-                print('Checking ' + channel.name + '...')
-                self.check_status(channel.url)
+            print('Checking ' + channel.get_name() + '...')
+            try:
+                self.check_status(channel.get_stream_url())
+            except StreamError:
+                print('Invalid: <unable to fetch stream url>')
 
-    def test_streams_fetchers(self):
-        for channel in CHANNEL_LIST:
-            if channel.stream_fetcher is not None:
-                print('Checking ' + channel.name + '...')
-                try:
-                    url = channel.stream_fetcher.fetch_stream_url()
-                    self.check_status(url)
-                except StreamError:
-                    print('Invalid: <unable to fetch stream url>')
-
-    def check_status(self, url):
+    @staticmethod
+    def check_status(url):
         req = urllib.request.Request(url)
         req.add_header('User-Agent', 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0')
         try:
