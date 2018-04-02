@@ -21,7 +21,8 @@ def channel_stream():
 
     for channel in CHANNEL_LIST:
         if channel.get_route_name() == target:
-            return channel.get_stream_url()
+            url = channel.get_stream_url()
+            return flask.redirect(url, code=302)
 
 
 for current_channel in CHANNEL_LIST:
@@ -81,11 +82,6 @@ def __get_channels_response_lines(host: str, result_format: str) -> Response:
         return Response('\n'.join(response_list), mimetype='text/html')
     else:
         return Response('Unknown Format', mimetype='text/plain')
-
-
-def __get_stream_lines(fetcher) -> Response:
-    playlist = fetcher.fetch_stream_url()
-    return flask.redirect(playlist, code=302)
 
 
 def __get_epg_response() -> Response:
