@@ -7,7 +7,7 @@ class LBCSports(Channel):
         return 'LBC Sports'
 
     def get_logo(self) -> str:
-        return 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
+        return 'https://www.lbcgroup.tv/programsimages/Channels-L-1-636090059981705970.png'
 
     def get_stream_url(self) -> str:
         return stream.fetch_from('https://www.lbcgroup.tv/sports')

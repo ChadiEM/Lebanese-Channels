@@ -1,11 +1,11 @@
 from typing import List
 
-from lebanese_channels.channel import Channel
+from lebanese_channels.channel import CheckedChannel
 from lebanese_channels.epg.program_data import ProgramData
 from lebanese_channels.services.utils import stream
 
 
-class MTV(Channel):
+class MTV(CheckedChannel):
     def get_name(self) -> str:
         return 'MTV'
 

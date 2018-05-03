@@ -1,6 +1,6 @@
 from urllib.error import HTTPError
 
-from lebanese_channels.channel import StreamError
+from lebanese_channels.channel import StreamError, StreamNotFoundError
 from lebanese_channels.services.utils.web import get_response
 
 
@@ -13,4 +13,4 @@ def fetch_from(url):
     except HTTPError:
         raise StreamError(url)
 
-    raise StreamError(url)
+    raise StreamNotFoundError(url)

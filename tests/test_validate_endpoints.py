@@ -3,7 +3,7 @@ import urllib
 import urllib.request
 from urllib.error import HTTPError
 
-from lebanese_channels.channel import StreamError
+from lebanese_channels.channel import StreamError, StreamNotFoundError
 from lebanese_channels.channel_ids import CHANNEL_LIST
 
 
@@ -25,7 +25,7 @@ class ValidationTest(unittest.TestCase):
             print('Checking ' + channel.get_name() + '...')
             try:
                 self.check_status(channel.get_stream_url())
-            except StreamError:
+            except (StreamError, StreamNotFoundError):
                 print('Invalid: <unable to fetch stream url>')
 
     @staticmethod

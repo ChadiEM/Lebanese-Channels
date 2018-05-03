@@ -44,15 +44,16 @@ def __get_channels_response_lines(host: str, result_format: str) -> Response:
     display_items = []
 
     for channel in CHANNEL_LIST:
-        url = host + 'channel/' + channel.get_route_name()
-        display_items.append(
-            DisplayItem(channel.id, channel.get_name(), url, channel.get_logo()))
+        if channel.is_available():
+            url = host + 'channel/' + channel.get_route_name()
+            display_items.append(
+                DisplayItem(channel.get_route_name(), channel.get_name(), url, channel.get_logo()))
 
     if result_format is None or result_format == 'm3u8':
         response_list = ['#EXTM3U']
         for display_item in display_items:
             response_list.append('#EXTINF:-1'
-                                 + ' tvg-id="' + str(display_item.channel_id) + '"'
+                                 + ' tvg-id="' + display_item.channel_short_name + '"'
                                  + ' tvg-logo="' + display_item.channel_logo + '"'
                                  + ', ' + display_item.channel_name
                                  + '\n'

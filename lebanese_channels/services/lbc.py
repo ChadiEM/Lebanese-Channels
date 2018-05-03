@@ -1,34 +1,22 @@
 import datetime
 from typing import List
-from urllib.error import HTTPError
-from xml.etree import ElementTree
 
-from lebanese_channels.channel import Channel, StreamError
+from lebanese_channels.channel import CheckedChannel
 from lebanese_channels.epg.program_data import ProgramData
 from lebanese_channels.services.epg_parsers.lbc_parser import LBCParser
+from lebanese_channels.services.utils import stream
 from lebanese_channels.services.utils.epg import fetch_epg
-from lebanese_channels.services.utils.web import get_response
 
 
-class LBC(Channel):
+class LBC(CheckedChannel):
     def get_name(self) -> str:
         return 'LBC'
 
     def get_logo(self) -> str:
-        return 'http://www.lbcgroup.tv/programsimages/PCL-5-635531118011703749.png'
+        return 'https://www.lbcgroup.tv/programsimages/Channels-L-1-636090059981705970.png'
 
     def get_stream_url(self) -> str:
-        try:
-            html = get_response('http://mobilefeeds.lbcgroup.tv/getCategories.aspx')
-        except HTTPError:
-            raise StreamError('lbc')
-
-        root = ElementTree.fromstring(html)
-        playlist = root.find('watchLive')
-        if playlist is not None:
-            return playlist.text
-
-        raise StreamError('lbc')
+        return stream.fetch_from('https://www.lbcgroup.tv/live/en')
 
     def get_epg_data(self) -> List[ProgramData]:
         now = datetime.datetime.now()

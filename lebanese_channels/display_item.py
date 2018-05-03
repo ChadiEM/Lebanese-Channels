@@ -1,13 +1,13 @@
 class DisplayItem(object):
-    def __init__(self, channel_id, channel_name, channel_url, channel_logo):
-        self._channel_id = channel_id
+    def __init__(self, channel_short_name, channel_name, channel_url, channel_logo):
+        self._channel_short_name = channel_short_name
         self._channel_name = channel_name
         self._channel_url = channel_url
         self._channel_logo = channel_logo
 
     @property
-    def channel_id(self):
-        return self._channel_id
+    def channel_short_name(self):
+        return self._channel_short_name
 
     @property
     def channel_name(self):
