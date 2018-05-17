@@ -1,8 +1,8 @@
-import abc
+from abc import ABC, abstractmethod
 
 
-class EPGParser(metaclass=abc.ABCMeta):
+class EPGParser(ABC):
     @staticmethod
-    @abc.abstractmethod
+    @abstractmethod
     def parse_schedule_page(page_data: str):
         return

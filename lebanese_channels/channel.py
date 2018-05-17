@@ -1,30 +1,24 @@
-import abc
-import itertools
 import re
+from abc import ABC, abstractmethod
 from typing import List
 
 from lebanese_channels.epg.program_data import ProgramData
 
 
-class Channel(object):
-    id_generator_function = itertools.count(start=1)
-
-    def __init__(self):
-        self._id = next(Channel.id_generator_function)
-
-    @abc.abstractmethod
+class Channel(ABC):
+    @abstractmethod
     def get_name(self) -> str:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_logo(self) -> str:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_stream_url(self) -> str:
         pass
 
-    @abc.abstractmethod
+    @abstractmethod
     def get_epg_data(self) -> List[ProgramData]:
         pass
 
@@ -34,12 +28,8 @@ class Channel(object):
     def is_available(self) -> bool:
         return True
 
-    @property
-    def id(self) -> int:
-        return self._id
 
-
-class CheckedChannel(Channel):
+class CheckedChannel(Channel, ABC):
     def is_available(self) -> bool:
         try:
             self.get_stream_url()
