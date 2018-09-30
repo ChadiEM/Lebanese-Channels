@@ -17,16 +17,28 @@ class ValidationTest(unittest.TestCase):
 
     def test_logos(self):
         for channel in CHANNEL_LIST:
-            print('Checking ' + channel.get_name() + '...')
+            print(f'Checking {channel.get_name()}...', end=' ')
             self.check_status(channel.get_logo())
 
     def test_streams(self):
         for channel in CHANNEL_LIST:
-            print('Checking ' + channel.get_name() + '...')
+            print(f'Checking {channel.get_name()}...', end=' ')
             try:
                 self.check_status(channel.get_stream_url())
             except (StreamError, StreamNotFoundError):
                 print('Invalid: <unable to fetch stream url>')
+
+    def test_epgs(self):
+        for channel in CHANNEL_LIST:
+            print(f'Checking {channel.get_name()}...', end=' ')
+            try:
+                data = channel.get_epg_data()
+                if data is not None:
+                    print('Valid')
+                else:
+                    print('Not available')
+            except Exception:
+                print('Invalid')
 
     @staticmethod
     def check_status(url):
@@ -35,12 +47,12 @@ class ValidationTest(unittest.TestCase):
         try:
             response = urllib.request.urlopen(req)
             if response.code == 200:
-                print('Valid: ' + url)
+                print(f'Valid: {url}')
             else:
-                print('Invalid: ' + url)
+                print(f'Invalid: {url}')
         except HTTPError:
-            print('Invalid: ' + url)
+            print(f'Invalid: {url}')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
