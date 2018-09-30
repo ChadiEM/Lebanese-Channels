@@ -104,10 +104,10 @@ def __get_epg_response() -> Response:
             try:
                 response_string += future.result(timeout=3)
             except TimeoutError:
-                logger.warn('Did not get a response within the specified time, exception = %s', exc_info=1)
+                logger.warning('Did not get a response within the specified time, exception = %s', exc_info=1)
                 pass
             except Exception as e:
-                logger.warn('Was not able to retrieve EPG, exception = %s', e, exc_info=1)
+                logger.warning('Was not able to retrieve EPG, exception = %s', e, exc_info=1)
                 pass
 
     response_string += '</tv>'
