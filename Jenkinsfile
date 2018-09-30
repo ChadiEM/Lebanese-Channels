@@ -1,3 +1,5 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent none
     triggers {
@@ -11,7 +13,6 @@ pipeline {
                 }
             }
             steps {
-                checkout scm
                 sh 'python -m unittest discover -v tests'
                 sh 'pylint --disable=C0111,C0301 --persistent=no --output-format=parseable lebanese_channels > pylint.out || exit 0'
             }
