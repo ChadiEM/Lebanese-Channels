@@ -1,4 +1,4 @@
-class DisplayItem(object):
+class DisplayItem:
     def __init__(self, channel_short_name, channel_name, channel_url, channel_logo):
         self._channel_short_name = channel_short_name
         self._channel_name = channel_name

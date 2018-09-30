@@ -3,7 +3,7 @@ import datetime
 import pytz
 
 
-class ProgramData(object):
+class ProgramData:
     def __init__(self,
                  name: str,
                  start_time: datetime,
