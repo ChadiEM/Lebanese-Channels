@@ -1,4 +1,5 @@
 import concurrent.futures
+import logging
 
 import flask
 import flask_caching
@@ -12,6 +13,8 @@ from lebanese_channels.epg.epg import get_epg_channel_declaration
 app = flask.Flask(__name__)
 cache = flask_caching.Cache(app, config={'CACHE_TYPE': 'simple'})
 wsgi_app = app.wsgi_app
+
+logger = logging.getLogger(__name__)
 
 
 @cache.cached(timeout=60)
@@ -93,12 +96,19 @@ def __get_epg_response() -> Response:
     for channel in CHANNEL_LIST:
         response_string += get_epg_channel_declaration(channel)
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = {executor.submit(epg.get_epg_as_xml, channel): channel for channel in
                    CHANNEL_LIST}
 
         for future in concurrent.futures.as_completed(futures):
-            response_string += future.result()
+            try:
+                response_string += future.result(timeout=3)
+            except TimeoutError:
+                logger.warn('Did not get a response within the specified time, exception = %s', exc_info=1)
+                pass
+            except Exception as e:
+                logger.warn('Was not able to retrieve EPG, exception = %s', e, exc_info=1)
+                pass
 
     response_string += '</tv>'
 
