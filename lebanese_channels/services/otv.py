@@ -1,5 +1,4 @@
 from lebanese_channels.channel import Channel
-from lebanese_channels.services.utils import stream
 
 
 class OTV(Channel):
@@ -11,7 +10,7 @@ class OTV(Channel):
                '=w300 '
 
     def get_stream_url(self) -> str:
-        return stream.fetch_from('http://www.otv.com.lb/new-live.php')
+        return 'https://svs.itworkscdn.net/otvlebanonlive/otv.smil/playlist.m3u8'
 
     def get_epg_data(self):
         return None
