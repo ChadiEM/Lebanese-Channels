@@ -2,9 +2,7 @@
 
 pipeline {
     agent none
-    triggers {
-        githubPush()
-    }
+
     stages {
         stage('Validate') {
             agent {
@@ -20,18 +18,6 @@ pipeline {
                 always {
                     warnings canComputeNew: false, canResolveRelativePaths: false, canRunOnFailed: true, categoriesPattern: '', parserConfigurations: [[parserName: 'PyLint', pattern: 'pylint.out']], defaultEncoding: '', excludePattern: '', healthy: '', includePattern: '', messagesPattern: '', unHealthy: ''
                 }
-            }
-        }
-        stage('Deploy') {
-            agent {
-                label 'website'
-            }
-            when {
-                branch 'master'
-            }
-            steps {
-                sh 'rsync -Crv ./ /opt/channels/ --delete'
-                sh 'sudo /bin/systemctl restart channels.service'
             }
         }
     }
