@@ -23,7 +23,9 @@ pipeline {
             }
         }
         stage('Deploy') {
-            agent any
+            agent {
+                label 'website'
+            }
             when {
                 branch 'master'
             }
