@@ -7,7 +7,7 @@ class NBN(Channel):
         return 'NBN'
 
     def get_logo(self) -> str:
-        return 'http://www.nbn.com.lb/wp-content/uploads/2017/02/nbnlogoforsite3.png'
+        return 'https://nbntv.me/wp-content/uploads/2018/08/cropped-nbn-logo-512-192x192.jpg'
 
     def get_stream_url(self) -> str:
         return stream.fetch_from('http://player.l1vetv.com/nbn')
