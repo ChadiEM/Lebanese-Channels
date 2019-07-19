@@ -10,6 +10,3 @@ class Future(Channel):
 
     def get_stream_url(self) -> str:
         return 'http://futuretv.cdn.mangomolo.com/futuretv/futuretv/playlist.m3u8'
-
-    def get_epg_data(self):
-        return None

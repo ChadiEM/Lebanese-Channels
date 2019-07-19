@@ -28,18 +28,6 @@ class ValidationTest(unittest.TestCase):
             except (StreamError, StreamNotFoundError):
                 print('Invalid: <unable to fetch stream url>')
 
-    def test_epgs(self):
-        for channel in CHANNEL_LIST:
-            print(f'Checking {channel.get_name()}...', end=' ')
-            try:
-                data = channel.get_epg_data()
-                if data is not None:
-                    print('Valid')
-                else:
-                    print('Not available')
-            except Exception:
-                print('Invalid')
-
     @staticmethod
     def check_status(url):
         req = urllib.request.Request(url)

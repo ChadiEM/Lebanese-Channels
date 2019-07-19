@@ -1,6 +1,21 @@
 import urllib
 import urllib.parse
 import urllib.request
+from urllib.error import HTTPError
+
+from lebanese_channels.channel import StreamError, StreamNotFoundError
+
+
+def fetch_from(url):
+    try:
+        html = get_response(url)
+        for line in html.splitlines():
+            if ('file' in line or 'Link' in line) and 'm3u8' in line:
+                return line.split('"')[1]
+    except HTTPError:
+        raise StreamError(url)
+
+    raise StreamNotFoundError(url)
 
 
 def get_response(url: str, params=None):

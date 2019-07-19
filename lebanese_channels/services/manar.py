@@ -10,6 +10,3 @@ class Manar(Channel):
 
     def get_stream_url(self) -> str:
         return 'http://live2.mediaforall.net:1935/liveorigin/livestream_480p/playlist.m3u8'
-
-    def get_epg_data(self):
-        return None

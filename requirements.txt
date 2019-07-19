@@ -1,6 +1,3 @@
 flask
 flask_caching
 gunicorn
-BeautifulSoup4
-lxml
-pytz

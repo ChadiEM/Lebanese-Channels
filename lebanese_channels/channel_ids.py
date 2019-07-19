@@ -1,19 +1,10 @@
-from lebanese_channels.services.future import Future
-from lebanese_channels.services.jadeed import Jadeed
-from lebanese_channels.services.lbcsports import LBCSports
-from lebanese_channels.services.manar import Manar
-from lebanese_channels.services.mtv import MTV
-from lebanese_channels.services.nbn import NBN
-from lebanese_channels.services.noursat import Noursat
-from lebanese_channels.services.otv import OTV
+from lebanese_channels.channel import Channel
+# noinspection PyUnresolvedReferences
+from lebanese_channels.services import *
 
-CHANNEL_LIST = [
-    MTV(),
-    OTV(),
-    Jadeed(),
-    Future(),
-    NBN(),
-    Manar(),
-    Noursat(),
-    LBCSports()
-]
+CHANNEL_LIST = []
+
+for cls in Channel.__subclasses__():
+    CHANNEL_LIST.append(cls())
+
+CHANNEL_LIST = sorted(CHANNEL_LIST, key=lambda x: x.get_name())

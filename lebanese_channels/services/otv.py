@@ -11,6 +11,3 @@ class OTV(Channel):
 
     def get_stream_url(self) -> str:
         return 'https://svs.itworkscdn.net/otvlebanonlive/otv.smil/playlist.m3u8'
-
-    def get_epg_data(self):
-        return None

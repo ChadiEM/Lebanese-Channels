@@ -1,5 +1,5 @@
 from lebanese_channels.channel import Channel
-from lebanese_channels.services.utils import stream
+from lebanese_channels.utils import stream
 
 
 class NBN(Channel):
@@ -11,6 +11,3 @@ class NBN(Channel):
 
     def get_stream_url(self) -> str:
         return stream.fetch_from('http://player.l1vetv.com/nbn')
-
-    def get_epg_data(self):
-        return None
