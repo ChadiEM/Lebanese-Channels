@@ -1,3 +1,4 @@
+import re
 import urllib
 import urllib.parse
 import urllib.request
@@ -10,8 +11,11 @@ def fetch_from(url):
     try:
         html = get_response(url)
         for line in html.splitlines():
-            if ('file' in line or 'Link' in line) and 'm3u8' in line:
-                return line.split('"')[1]
+            if 'm3u8' in line:
+                match = re.search('http[s]?://\S+\.m3u8', line)
+                if match is not None:
+                    return match.group(0)
+
     except HTTPError:
         raise StreamError(url)
 
