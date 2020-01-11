@@ -7,7 +7,7 @@ class OTV(Channel):
 
     def get_logo(self) -> str:
         return 'https://lh3.googleusercontent.com/7faSyx5uV7BjRXzn6hcbTPs8sfY0WlreUI7XZZei-u7VJTNpU7LVnTA7c7euazfbcso' \
-               '=w300 '
+               '=w300'
 
     def get_stream_url(self) -> str:
         return 'https://svs.itworkscdn.net/otvlebanonlive/otv.smil/playlist.m3u8'
