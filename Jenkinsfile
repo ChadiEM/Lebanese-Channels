@@ -7,12 +7,13 @@ pipeline {
         stage('Validate') {
             agent {
                 dockerfile {
-                    filename 'Dockerfile.build'
+                    filename 'Dockerfile'
+                    additionalBuildArgs '--target lint'
                 }
             }
             steps {
                 sh 'python -m unittest discover -v tests'
-                sh 'pylint --disable=C0111,C0301 --persistent=no --output-format=parseable lebanese_channels > pylint.out || exit 0'
+                sh 'pylint --exit-zero --disable=C0111,C0301 --persistent=no --output-format=parseable lebanese_channels > pylint.out'
             }
             post {
                 always {
