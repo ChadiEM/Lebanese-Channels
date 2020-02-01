@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
-env python3 lebanese_channels/entry_point.py --bind :12589 --timeout=60 lebanese_channels.flask_app:wsgi_app
+gunicorn --bind :12589 --timeout=60 lebanese_channels.flask_app:app

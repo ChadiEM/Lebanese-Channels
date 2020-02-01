@@ -3,8 +3,17 @@
 This Python module consists of a web server that provides a `/channels` endpoint for a playlist of some of the most common Lebanese channels.
 
 ## Run
-`./start.sh` to start the server.
-Or, if using docker, `docker run -d -p 12589:12589 chadiem/lebanese-channels`
+
+### Docker
+The easiest way to experiment with this module is to run it using docker.
+
+`docker run -d -p 12589:12589 chadiem/lebanese-channels`
+
+### Local
+```
+pip install -r requirements.txt
+./start.sh
+```
 
 ## Configure
 - Kodi:

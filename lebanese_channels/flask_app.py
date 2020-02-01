@@ -1,37 +1,31 @@
 import logging
 
 import flask
-import flask_caching
 from flask import Response
 
 from lebanese_channels.channel_ids import CHANNEL_LIST
 from lebanese_channels.display_item import DisplayItem
 
 app = flask.Flask(__name__)
-cache = flask_caching.Cache(app, config={'CACHE_TYPE': 'simple'})
-wsgi_app = app.wsgi_app
 
 logger = logging.getLogger(__name__)
 
 
-@cache.cached(timeout=60)
-def channel_stream():
-    url_rule = flask.request.url_rule.rule
-    target = url_rule.split('/channel/')[1]
-
-    for channel in CHANNEL_LIST:
-        if channel.get_route_name() == target:
-            url = channel.get_stream_url()
-            return flask.redirect(url, code=302)
-
-
-for current_channel in CHANNEL_LIST:
-    app.add_url_rule('/channel/' + current_channel.get_route_name(), view_func=channel_stream)
+@app.route('/channel/<name>')
+def channel_route_default(name):
+    return __channel_stream(name)
 
 
 @app.route('/channels')
 def channels_route_default():
     return __get_channels_response_lines(flask.request.url_root, flask.request.args.get('format'))
+
+
+def __channel_stream(target):
+    for channel in CHANNEL_LIST:
+        if channel.get_route_name() == target:
+            url = channel.get_stream_url()
+            return flask.redirect(url, code=302)
 
 
 def __get_channels_response_lines(host: str, result_format: str) -> Response:
