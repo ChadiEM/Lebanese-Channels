@@ -1,10 +1,16 @@
+# Archival Notice
+
+As the channels are no longer freely accessible, this project is no longer relevant.
+
 # Lebanese Channels Playlist
 
-This Python module consists of a web server that provides a `/channels` endpoint for a playlist of some of the most common Lebanese channels.
+This Python module consists of a web server that provides a `/channels` endpoint for a playlist of some of the most
+common Lebanese channels.
 
 ## Run
 
 ### Docker
+
 The easiest way to experiment with this module is to run it using docker.
 
 `docker run -d -p 12589:12589 chadiem/lebanese-channels`
